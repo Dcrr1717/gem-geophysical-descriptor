@@ -48,6 +48,7 @@ from ..sims.datasets import simulate_trajectory, trajectory_jobs
 from ..sims.surrogate import iaaft, spectral_mismatch, histogram_mismatch
 from ..descriptor.spectral import spectral_features
 from ..descriptor.topology import topology_features, _HAS_GUDHI
+from ..descriptor.topology_rich import rich_topology_features
 from ..baselines.features import BASELINES
 from ..baselines.structure import VALIDITY_BASELINES, okubo_weiss, gradient_stats, \
     increment_flatness
@@ -71,6 +72,12 @@ FEATURE_SETS = {
     "physical_structure_all": ("baseline-structure", "Okubo-Weiss + gradient + increment features"),
     "baselines_union": ("baseline-union", "all non-topological baselines concatenated (no raw pixels)"),
     "baselines_union+topo": ("incremental", "baselines_union + topological view"),
+    "baselines_union+topo_rich": ("incremental", "baselines_union + all richer topological views"),
+    "topo_persistence_image": ("ours-rich", "persistence images of H0/H1 (2 x 10x10), full-resolution field"),
+    "topo_betti_curves": ("ours-rich", "Betti curves beta0/beta1 on 33 thresholds, full-resolution field"),
+    "topo_multiscale": ("ours-rich", "multi-scale filtration (Gaussian sigma 1/2/4/8 px), 16 summaries per scale"),
+    "topo_rich_all": ("ours-rich", "persistence images + Betti curves + multi-scale filtration"),
+    "descriptor_rich": ("ours-rich", "spectral view + all richer topological views"),
     "topological_view_fullres": ("sensitivity", "topological view at full 256^2 resolution (not pre-registered)"),
     "descriptor_fullres_topo": ("sensitivity", "descriptor with full-resolution topological view (not pre-registered)"),
 }
@@ -78,6 +85,7 @@ SPECIFIED = [k for k, v in FEATURE_SETS.items() if v[0] == "baseline-specified"]
 STRICT = [k for k, v in FEATURE_SETS.items() if v[0].startswith("baseline")]
 SPECTRUM_MOMENTS = ["moments", "spectral_slope", "power_spectrum", "histogram_quantiles"]
 STRUCTURE = [k for k, v in FEATURE_SETS.items() if v[0] == "baseline-structure"]
+RICH = [k for k, v in FEATURE_SETS.items() if v[0] == "ours-rich"]
 
 
 def _key(obj) -> str:
@@ -175,7 +183,7 @@ def generate_surrogates(coh, cfg, final, cache_dir, workers):
 # Features
 # ---------------------------------------------------------------------------
 def _features_worker(args):
-    w, topo_ds, fullres = args
+    w, topo_ds, fullres, rich = args
     f = {"spectral_view": spectral_features(w),
          "topological_view": topology_features(w, downsample=topo_ds),
          "okubo_weiss": okubo_weiss(w),
@@ -187,16 +195,18 @@ def _features_worker(args):
         f[b] = fn(w)
     if fullres:
         f["topological_view_fullres"] = topology_features(w, downsample=w.shape[0])
+    if rich:
+        f.update(rich_topology_features(w))
     return f
 
 
-def compute_features(fields, topo_ds, workers, decimals=8, fullres=True):
+def compute_features(fields, topo_ds, workers, decimals=8, fullres=True, rich=True):
     """All feature sets for a stack of fields. Every feature is rounded to
     `decimals` absolute decimals: no feature here is meaningful below 1e-8, and
     rounding removes floating-point round-off cues (e.g. the mean of a
     standardized field is ~1e-17 noise that a StandardScaler would amplify)."""
     with Pool(workers) as pool:
-        rows = pool.map(_features_worker, [(w, topo_ds, fullres) for w in fields],
+        rows = pool.map(_features_worker, [(w, topo_ds, fullres, rich) for w in fields],
                         chunksize=4)
     F = {k: np.vstack([r[k] for r in rows]) for k in rows[0]}
     F["descriptor"] = np.hstack([F["spectral_view"], F["topological_view"]])
@@ -208,6 +218,11 @@ def compute_features(fields, topo_ds, workers, decimals=8, fullres=True):
     F["baselines_union"] = np.hstack([F["moments"], F["spectral_slope"], F["power_spectrum"],
                                       F["histogram_quantiles"], F["physical_structure_all"]])
     F["baselines_union+topo"] = np.hstack([F["baselines_union"], F["topological_view"]])
+    if rich:
+        F["topo_rich_all"] = np.hstack([F["topo_persistence_image"], F["topo_betti_curves"],
+                                        F["topo_multiscale"]])
+        F["descriptor_rich"] = np.hstack([F["spectral_view"], F["topo_rich_all"]])
+        F["baselines_union+topo_rich"] = np.hstack([F["baselines_union"], F["topo_rich_all"]])
     if decimals is not None:
         F = {k: np.round(np.nan_to_num(v), decimals) for k, v in F.items()}
     return F
@@ -301,7 +316,40 @@ def verdicts(task, y, groups, go_margin, n_boot, seed):
     out["view_ablation"] = {"descriptor": d, "spectral_view": s, "topological_view": t,
                             "descriptor_minus_spectral_view": d - s,
                             "descriptor_minus_topological_view": d - t}
+    if all(k in R for k in RICH + ["baselines_union+topo_rich"]):
+        out["rich_topology"] = rich_verdict(R, y, groups, go_margin, n_boot, seed)
     return out
+
+
+def rich_verdict(R, y, groups, go_margin, n_boot, seed):
+    """Does ANY richer topological vectorization beat `baselines_union` (all
+    non-topological baselines concatenated) by >= go_margin?"""
+    u = R["baselines_union"]["best_accuracy"]
+    sb = max(STRUCTURE, key=lambda n: R[n]["best_accuracy"])
+    variants = {}
+    for k in RICH:
+        a = R[k]["best_accuracy"]
+        variants[k] = {
+            "accuracy": a,
+            "margin_vs_baselines_union": a - u,
+            "margin_vs_baselines_union_ci95": paired_bootstrap_margin(
+                R[k], R["baselines_union"], y, groups, n_boot, seed)["ci95"],
+            "margin_vs_best_structure_baseline": a - R[sb]["best_accuracy"],
+            "margin_vs_old_topological_view": a - R["topological_view"]["best_accuracy"],
+            "go": bool(a - u >= go_margin)}
+    best = max(RICH, key=lambda k: variants[k]["accuracy"])
+    ui = R["baselines_union+topo_rich"]["best_accuracy"]
+    return {"baselines_union_accuracy": u,
+            "max_attainable_margin": 1.0 - u,
+            "best_structure_baseline": sb,
+            "best_structure_baseline_accuracy": R[sb]["best_accuracy"],
+            "best_rich_variant": best, "variants": variants,
+            "incremental": {"baselines_union_plus_topo_rich_accuracy": ui, "gain": ui - u,
+                            "gain_ci95": paired_bootstrap_margin(
+                                R["baselines_union+topo_rich"], R["baselines_union"], y,
+                                groups, n_boot, seed)["ci95"]},
+            "any_go": any(v["go"] for v in variants.values()),
+            "verdict": "GO" if any(v["go"] for v in variants.values()) else "NO-GO"}
 
 
 # ---------------------------------------------------------------------------
@@ -410,6 +458,9 @@ def run(cfg):
         "verdict_specified": primary["specified"]["verdict"],
         "verdict_strict": primary["strict"]["verdict"],
         "verdict_overall": primary["strict"]["verdict"],
+        "verdict_rich_topology": primary.get("rich_topology", {}).get("verdict"),
+        "rich_topology_go_tasks": [k for k, t in tasks.items()
+                                   if t["verdicts"].get("rich_topology", {}).get("any_go")],
         "verdict_overall_rule": "overall = strict verdict: the specified baselines are blind by "
                                 "construction on this benchmark, so only the strict comparison "
                                 "tests superiority over strong baselines",
@@ -486,7 +537,48 @@ def _verdict_lines(v):
         f"- incremental value of topology on top of all baselines: "
         f"{inc['baselines_union_accuracy']:.3f} -> {inc['baselines_union_plus_topo_accuracy']:.3f} "
         f"(gain {inc['gain']:+.3f}, CI {_fmt_ci(inc['gain_ci95'])})",
+    ] + (_rich_lines(v["rich_topology"]) if "rich_topology" in v else [])
+
+
+def _rich_lines(r):
+    b = r["best_rich_variant"]
+    bv = r["variants"][b]
+    inc = r["incremental"]
+    return [
+        f"- richer topology: best variant `{b}` {bv['accuracy']:.3f} vs `baselines_union` "
+        f"{r['baselines_union_accuracy']:.3f} -> margin {bv['margin_vs_baselines_union']:+.3f}, "
+        f"CI {_fmt_ci(bv['margin_vs_baselines_union_ci95'])} (max attainable "
+        f"{r['max_attainable_margin']:+.3f}) -> **{r['verdict']}**; adding all richer views "
+        f"to `baselines_union`: gain {inc['gain']:+.3f}, CI {_fmt_ci(inc['gain_ci95'])}",
     ]
+
+
+def rich_summary_table(tasks, order):
+    """One row per task: can any richer topological vectorization beat
+    baselines_union by >= 0.05?"""
+    L = ["| Task | baselines_union | max attainable margin | old topo view (64^2) | "
+         + " | ".join(f"`{k}`" for k in RICH)
+         + " | union + rich topo (gain) | any >= +0.05? |",
+         "|---|---|---|---|" + "---|" * len(RICH) + "---|---|"]
+    for name in order:
+        v = tasks[name]["verdicts"].get("rich_topology")
+        if v is None:
+            continue
+        R = tasks[name]["results"]
+        cells = []
+        for k in RICH:
+            x = v["variants"][k]
+            ci = x["margin_vs_baselines_union_ci95"]
+            cells.append(f"{x['accuracy']:.3f} ({x['margin_vs_baselines_union']:+.3f} "
+                         f"[{ci[0]:+.3f}, {ci[1]:+.3f}])")
+        inc = v["incremental"]
+        L.append(f"| {name} | {v['baselines_union_accuracy']:.3f} | "
+                 f"{v['max_attainable_margin']:+.3f} | "
+                 f"{R['topological_view']['best_accuracy']:.3f} | " + " | ".join(cells)
+                 + f" | {inc['baselines_union_plus_topo_rich_accuracy']:.3f} "
+                   f"({inc['gain']:+.3f} [{inc['gain_ci95'][0]:+.3f}, {inc['gain_ci95'][1]:+.3f}]) | "
+                 + ("**YES**" if v["any_go"] else "no") + " |")
+    return L
 
 
 def write_report(path, res):
@@ -511,6 +603,21 @@ def write_report(path, res):
           f"**Strict verdict (adds leak detectors and structure-aware physical baselines): "
           f"{res['verdict_strict']}** (margin {P['strict']['margin']:+.3f} vs "
           f"`{P['strict']['best_baseline']}`).", ""]
+    order = ["binary_pooled", "multiclass6"] + [k for k in res["tasks"]
+                                                 if k not in ("binary_pooled", "multiclass6")]
+    if "rich_topology" in P:
+        go_tasks = res.get("rich_topology_go_tasks", [])
+        L += ["## Richer topological vectorizations vs `baselines_union`", "",
+              f"**Verdict: {P['rich_topology']['verdict']}** on the primary task; tasks where any "
+              f"richer vectorization reaches >= +{res['go_margin']:.2f} over `baselines_union`: "
+              f"{', '.join(go_tasks) if go_tasks else 'none'}.", "",
+              "Cells: accuracy (margin vs `baselines_union` [95% paired group-bootstrap CI]). "
+              "`max attainable margin` = 1 - accuracy of `baselines_union`: when it is below "
+              "+0.05 the GO threshold cannot be reached by any feature set. Richer views are "
+              f"computed from the full-resolution {sim['grid']}^2 field; "
+              f"`topological_view_fullres` (8 summaries at {sim['grid']}^2) is the "
+              "resolution-matched control in the task tables.", ""]
+        L += rich_summary_table(res["tasks"], order) + [""]
     L += ["## Setup", "",
           f"- Coherent fields: {res['n_coherent']} snapshots of forced 2D turbulence "
           f"(grid {sim['grid']}^2, IF-{sim.get('scheme', 'rk4').upper()}, dt={sim['dt']}, "
@@ -554,9 +661,10 @@ def write_report(path, res):
           "- `baseline-structure`: phase-sensitive physical diagnostics of coherent structures "
           "(Okubo-Weiss, gradient statistics, increment flatness) - no topology.",
           "- `baseline-union` / `incremental`: all non-topological baselines, without / with the "
-          "topological view added (incremental value of topology).", ""]
-    order = ["binary_pooled", "multiclass6"] + [k for k in res["tasks"]
-                                                 if k not in ("binary_pooled", "multiclass6")]
+          "topological view added (incremental value of topology).",
+          "- `ours-rich`: richer vectorizations of the same sublevel-set persistent homology "
+          "(`src/descriptor/topology_rich.py`): persistence images, Betti curves, a multi-scale "
+          "Gaussian filtration, their concatenation, and the spectral view + all of them.", ""]
     titles = {"binary_pooled": "Primary task: coherent vs IAAFT surrogate (all forcing scales pooled)",
               "multiclass6": "Multiclass: forcing scale x {coherent, surrogate} (6 classes)"}
     for name in order:
@@ -581,7 +689,9 @@ def write_report(path, res):
           "- `figures/accuracy_binary.png`, `figures/accuracy_multiclass.png` - grouped-CV "
           "accuracy per feature set.",
           "- `figures/topology_features.png` - distribution of the topological-view features "
-          "for coherent vs surrogate fields.", ""]
+          "for coherent vs surrogate fields.",
+          "- `figures/rich_topology_margins.png` - margin of the best richer topological "
+          "vectorization over `baselines_union` per task, with the +0.05 GO threshold.", ""]
     for t in res["tasks"].values():
         t.pop("_dims", None)
     path.write_text("\n".join(L) + "\n")

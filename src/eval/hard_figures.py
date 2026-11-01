@@ -26,6 +26,7 @@ TIER_COLORS = {
     "baseline-validity": "#1baf7a",
     "baseline-structure": "#eda100",
     "baseline-union": "#e87ba4", "incremental": "#e87ba4",
+    "ours-rich": "#008300",
     "sensitivity": "#c3c2b7",
 }
 TIER_LABELS = {
@@ -33,6 +34,7 @@ TIER_LABELS = {
     "baseline-validity": "leak detectors (spectrum / histogram)",
     "baseline-structure": "structure-aware physical baselines",
     "baseline-union": "all baselines, without / with topology",
+    "ours-rich": "richer topological vectorizations",
     "sensitivity": "post-hoc sensitivity (not used for verdict)",
 }
 COH, SUR = "#2a78d6", "#eb6834"
@@ -124,7 +126,7 @@ def accuracy_figure(task, feature_sets, path, title):
     handles = []
     seen = set()
     for t in ["ours", "baseline-specified", "baseline-validity", "baseline-structure",
-              "baseline-union", "sensitivity"]:
+              "baseline-union", "ours-rich", "sensitivity"]:
         if t in seen:
             continue
         seen.add(t)
@@ -162,6 +164,47 @@ def topology_figure(res, coh, sur, path):
     plt.close(fig)
 
 
+def rich_margin_figure(entries, path, title, go_margin=0.05):
+    """Dot plot: margin of the best richer topological vectorization over
+    baselines_union per task (95% CI), the GO threshold, and the largest
+    margin any feature set could reach (1 - accuracy of baselines_union)."""
+    entries = [(n, v) for n, v in entries if v is not None][::-1]
+    fig, ax = plt.subplots(figsize=(9, 0.5 * len(entries) + 1.8), facecolor=SURFACE)
+    _style(ax)
+    ax.grid(True, axis="x", color=GRID, linewidth=0.8)
+    ax.grid(False, axis="y")
+    y = np.arange(len(entries))
+    labels = []
+    for yi, (name, v) in zip(y, entries):
+        b = v["best_rich_variant"]
+        m = v["variants"][b]["margin_vs_baselines_union"]
+        lo, hi = v["variants"][b]["margin_vs_baselines_union_ci95"]
+        ax.plot([lo, hi], [yi, yi], color=INK2, lw=1.2, zorder=2)
+        ax.scatter([m], [yi], s=64, color="#008300", edgecolor=SURFACE, linewidth=2,
+                   zorder=3, label="best richer topology (95% CI)" if yi == 0 else None)
+        ax.scatter([v["max_attainable_margin"]], [yi], s=60, marker="|", color=INK, lw=2,
+                   zorder=3, label="max attainable margin (1 - union acc)" if yi == 0 else None)
+        labels.append(f"{name}  ({b})")
+    ax.axvline(0.0, color=AXIS, lw=1)
+    ax.axvline(go_margin, color=INK2, lw=1)
+    ax.text(go_margin, len(entries) - 0.4, f" GO threshold +{go_margin:.2f}", fontsize=8,
+            color=INK2, va="bottom")
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=8, color=INK)
+    lo_all = min(min(v["variants"][v["best_rich_variant"]]["margin_vs_baselines_union_ci95"][0]
+                     for _, v in entries), -0.05)
+    ax.set_xlim(lo_all - 0.02, 0.12)
+    ax.set_ylim(-0.6, len(entries) - 0.1)
+    ax.set_xlabel("accuracy margin over baselines_union (grouped CV)", fontsize=9, color=INK2)
+    ax.legend(frameon=False, fontsize=8, loc="upper center",
+              bbox_to_anchor=(0.45, -0.12 - 0.5 / len(entries)), ncol=2)
+    ax.set_title(title, fontsize=11, color=INK, loc="left")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150, facecolor=SURFACE, bbox_inches="tight")
+    plt.close(fig)
+
+
 def make_figures(res, coh, sur, out_dir):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -173,4 +216,9 @@ def make_figures(res, coh, sur, out_dir):
                     out / "accuracy_multiclass.png",
                     "Forcing scale x {coherent, surrogate} (6 classes)")
     topology_figure(res, coh, sur, out / "topology_features.png")
+    entries = [(k, t["verdicts"].get("rich_topology")) for k, t in res["tasks"].items()]
+    if any(v is not None for _, v in entries):
+        rich_margin_figure(entries, out / "rich_topology_margins.png",
+                           "Richer topology vs all non-topological baselines (clean fields)",
+                           res.get("go_margin", 0.05))
     print(f"[figures] written to {out}")
