@@ -42,6 +42,14 @@ surrogate:
 
 descriptor:
   topo_downsample: 64       # pre-registered = repo default; full-res reported as sensitivity only
+  # Authentic multiview views X1 / X2 (ported verbatim, src/descriptor/authentic.py).
+  # Reference defaults, fixed before the run; nothing tuned on the data.
+  x1:                       # functional graph of 8 x 8 = 64 mesh regions, snapshot mode
+    theta: 0.40             # |Pearson| edge threshold (reference value)
+    blocks: [8, 8]
+    corr: pearson
+  x2:
+    min_pers: 0.01          # persistence floor in field-std units (reference value)
 
 evaluation:
   n_splits: 4               # StratifiedGroupKFold, group = trajectory
