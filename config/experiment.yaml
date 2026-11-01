@@ -1,0 +1,28 @@
+# GEM Go/No-Go experiment configuration.
+# Small, fast defaults for a local smoke run. Comments show cloud-scale values.
+seed: 0
+go_margin: 0.05        # descriptor must beat the best baseline by this accuracy
+standardize: true      # remove the amplitude shortcut -> test structure, not energy
+out_dir: results
+
+simulation:
+  grid: 64             # cloud: 256
+  dt: 0.002
+  n_steps: 2500        # cloud: 20000
+  spinup: 1200         # cloud: 8000
+  n_snapshots: 12      # cloud: 48
+  runs_per_regime: 3   # independent trajectories per regime (decorrelation)
+  nu: 0.01             # shared viscosity -> regimes differ in STRUCTURE, not energy
+  forcing_wavenumber: 4
+  forcing_amp: 0.6
+
+descriptor:
+  topo_downsample: 64  # grayscale image side for persistent homology
+
+# Fair benchmark: regimes matched in viscosity but differing in the scale of the
+# forced coherent structures (forcing wavenumber). Amplitude is standardized away,
+# so moments/energy are weak and the task is genuinely about flow structure.
+regimes:
+  - {name: large_scale,  forcing_wavenumber: 3}
+  - {name: medium_scale, forcing_wavenumber: 6}
+  - {name: small_scale,  forcing_wavenumber: 10}
