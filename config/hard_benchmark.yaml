@@ -47,3 +47,11 @@ evaluation:
   n_splits: 4               # StratifiedGroupKFold, group = trajectory
   n_repeats: 5
   bootstrap: 2000
+
+# Exploratory, post-hoc stress test (src/eval/noise_sweep.py) - NOT part of the
+# verdict. Additive white observation noise on both classes (keeps spectrum and
+# histogram matched in expectation), with and without a common Gaussian low-pass.
+noise_sweep:
+  noise_levels: [0.1, 0.3, 1.0]
+  smooth_sigma_px: 2.0
+  n_repeats: 3

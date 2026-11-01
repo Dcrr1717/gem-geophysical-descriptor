@@ -175,10 +175,9 @@ def generate_surrogates(coh, cfg, final, cache_dir, workers):
 # Features
 # ---------------------------------------------------------------------------
 def _features_worker(args):
-    w, topo_ds = args
+    w, topo_ds, fullres = args
     f = {"spectral_view": spectral_features(w),
          "topological_view": topology_features(w, downsample=topo_ds),
-         "topological_view_fullres": topology_features(w, downsample=w.shape[0]),
          "okubo_weiss": okubo_weiss(w),
          "gradient_stats": gradient_stats(w),
          "increment_flatness": increment_flatness(w)}
@@ -186,19 +185,24 @@ def _features_worker(args):
         f[b] = fn(w)
     for b, fn in VALIDITY_BASELINES.items():
         f[b] = fn(w)
+    if fullres:
+        f["topological_view_fullres"] = topology_features(w, downsample=w.shape[0])
     return f
 
 
-def compute_features(fields, topo_ds, workers, decimals=8):
+def compute_features(fields, topo_ds, workers, decimals=8, fullres=True):
     """All feature sets for a stack of fields. Every feature is rounded to
     `decimals` absolute decimals: no feature here is meaningful below 1e-8, and
     rounding removes floating-point round-off cues (e.g. the mean of a
     standardized field is ~1e-17 noise that a StandardScaler would amplify)."""
     with Pool(workers) as pool:
-        rows = pool.map(_features_worker, [(w, topo_ds) for w in fields], chunksize=4)
+        rows = pool.map(_features_worker, [(w, topo_ds, fullres) for w in fields],
+                        chunksize=4)
     F = {k: np.vstack([r[k] for r in rows]) for k in rows[0]}
     F["descriptor"] = np.hstack([F["spectral_view"], F["topological_view"]])
-    F["descriptor_fullres_topo"] = np.hstack([F["spectral_view"], F["topological_view_fullres"]])
+    if fullres:
+        F["descriptor_fullres_topo"] = np.hstack([F["spectral_view"],
+                                                  F["topological_view_fullres"]])
     F["physical_structure_all"] = np.hstack([F["okubo_weiss"], F["gradient_stats"],
                                              F["increment_flatness"]])
     F["baselines_union"] = np.hstack([F["moments"], F["spectral_slope"], F["power_spectrum"],
@@ -405,6 +409,10 @@ def run(cfg):
         "go_margin": go_margin,
         "verdict_specified": primary["specified"]["verdict"],
         "verdict_strict": primary["strict"]["verdict"],
+        "verdict_overall": primary["strict"]["verdict"],
+        "verdict_overall_rule": "overall = strict verdict: the specified baselines are blind by "
+                                "construction on this benchmark, so only the strict comparison "
+                                "tests superiority over strong baselines",
         "timing_seconds": {"simulation": float(coh.get("sim_seconds", np.nan)),
                            "surrogates": round(sur["seconds"], 1),
                            "features": round(feat_seconds, 1),
@@ -489,9 +497,16 @@ def write_report(path, res):
     dims = {k: v["dim"] for k, v in res["feature_sets"].items()}
     for t in res["tasks"].values():
         t["_dims"] = dims
-    L = ["# Hard structure-only benchmark - GEM Go/No-Go", ""]
-    L += [f"**Primary verdict (binary coherent-vs-IAAFT, grouped CV) against the specified "
-          f"baselines (moments, spectral_slope, raw_pixels): {res['verdict_specified']}** "
+    overall = res.get("verdict_overall", res["verdict_strict"])
+    L = ["# Hard structure-only benchmark - GEM Go/No-Go", "",
+         f"## Overall verdict: **{overall}**", "",
+         "Overall = strict verdict. On this benchmark the baselines named in the brief are "
+         "blind by construction (that is its purpose), so beating them does not show "
+         "superiority over strong baselines; the strict set adds the phase-sensitive "
+         "physical diagnostics a geophysical reviewer would expect. Interpretation: "
+         "`docs/RESULTS.md`.", ""]
+    L += [f"**Verdict as specified in the brief (primary binary coherent-vs-IAAFT task, "
+          f"grouped CV, vs moments, spectral_slope, raw_pixels): {res['verdict_specified']}** "
           f"(margin {P['specified']['margin']:+.3f}, threshold {res['go_margin']}).", "",
           f"**Strict verdict (adds leak detectors and structure-aware physical baselines): "
           f"{res['verdict_strict']}** (margin {P['strict']['margin']:+.3f} vs "
@@ -526,7 +541,11 @@ def write_report(path, res):
           f"- Descriptor configuration pre-registered as the repo default "
           f"(topo_downsample={cfg['descriptor']['topo_downsample']}); `*_fullres*` rows are a "
           f"post-hoc sensitivity check and are not used for any verdict.",
-          f"- Timing (s): {res['timing_seconds']}", ""]
+          "- Timing (wall clock, s): " + ", ".join(
+              f"{k} {v:.0f}" for k, v in res["timing_seconds"].items())
+          + ". The cloud VM was intermittently suspended during the run, so these overstate "
+            "compute; the solver needs ~15 ms per IF-RK4 step at 256^2 on one core "
+            "(~160 s per trajectory).", ""]
     L += ["## Tiers", "",
           "- `ours`, `ours-ablation`: the descriptor and its two views.",
           "- `baseline-specified`: the baselines named in the Go/No-Go brief.",
@@ -571,8 +590,23 @@ def write_report(path, res):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="config/hard_benchmark.yaml")
+    ap.add_argument("--report-only", action="store_true",
+                    help="re-render the Markdown report from the cached full results")
     args = ap.parse_args()
-    run(yaml.safe_load(Path(args.config).read_text()))
+    cfg = yaml.safe_load(Path(args.config).read_text())
+    if args.report_only:
+        stem = cfg.get("report_stem", "hard_benchmark")
+        res = pickle.loads((Path(cfg.get("cache_dir", "data/hard_benchmark"))
+                            / f"{stem}_full.pkl").read_bytes())
+        res.setdefault("verdict_overall", res["verdict_strict"])
+        res.setdefault("verdict_overall_rule", "overall = strict verdict: the specified "
+                       "baselines are blind by construction on this benchmark, so only the "
+                       "strict comparison tests superiority over strong baselines")
+        out = Path(cfg.get("out_dir", "results"))
+        (out / f"{stem}.json").write_text(json.dumps(_strip_oof(res), indent=2))
+        write_report(out / f"{stem}.md", res)
+        return
+    run(cfg)
 
 
 if __name__ == "__main__":
