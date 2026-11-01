@@ -8,6 +8,8 @@ data/
 results/*
 !results/hard_benchmark.md
 !results/hard_benchmark.json
+!results/noise_sweep.md
+!results/noise_sweep.json
 !results/figures/
 *.npz
 *.npy

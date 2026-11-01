@@ -4,5 +4,5 @@ scikit-learn>=1.3
 pyyaml>=6.0
 pandas>=2.0
 matplotlib>=3.7
-# Optional: enables true sublevel-set persistent homology (recommended).
-# gudhi>=3.8
+# Persistent homology (required by the hard benchmark; the smoke gonogo has a fallback).
+gudhi>=3.8
