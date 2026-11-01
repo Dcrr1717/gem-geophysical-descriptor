@@ -49,6 +49,15 @@
       "n_splits": 4,
       "n_repeats": 5,
       "bootstrap": 2000
+    },
+    "noise_sweep": {
+      "noise_levels": [
+        0.1,
+        0.3,
+        1.0
+      ],
+      "smooth_sigma_px": 2.0,
+      "n_repeats": 3
     }
   },
   "n_coherent": 240,
@@ -152,6 +161,36 @@
       "tier": "incremental",
       "description": "baselines_union + topological view",
       "dim": 144
+    },
+    "baselines_union+topo_rich": {
+      "tier": "incremental",
+      "description": "baselines_union + all richer topological views",
+      "dim": 466
+    },
+    "topo_persistence_image": {
+      "tier": "ours-rich",
+      "description": "persistence images of H0/H1 (2 x 10x10), full-resolution field",
+      "dim": 200
+    },
+    "topo_betti_curves": {
+      "tier": "ours-rich",
+      "description": "Betti curves beta0/beta1 on 33 thresholds, full-resolution field",
+      "dim": 66
+    },
+    "topo_multiscale": {
+      "tier": "ours-rich",
+      "description": "multi-scale filtration (Gaussian sigma 1/2/4/8 px), 16 summaries per scale",
+      "dim": 64
+    },
+    "topo_rich_all": {
+      "tier": "ours-rich",
+      "description": "persistence images + Betti curves + multi-scale filtration",
+      "dim": 330
+    },
+    "descriptor_rich": {
+      "tier": "ours-rich",
+      "description": "spectral view + all richer topological views",
+      "dim": 341
     },
     "topological_view_fullres": {
       "tier": "sensitivity",
@@ -1025,6 +1064,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 0.9991666666666668
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004930066485916344,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958333333333333,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09371468522359346,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99875
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 0.9887499999999999,
+            "accuracy_std": 0.01126542152882982,
+            "accuracy_std_repeats": 0.0016666666666666607,
+            "f1_macro": 0.9887494990310571,
+            "fold_accuracies": [
+              1.0,
+              0.9666666666666667,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              0.9666666666666667,
+              0.9916666666666667,
+              0.975,
+              1.0,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9925,
+            "accuracy_std": 0.008700255424092128,
+            "accuracy_std_repeats": 0.0028259708263021852,
+            "f1_macro": 0.992499641904806,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9666666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "silhouette": 0.12907948465956032,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9925
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 0.9304166666666667,
+            "accuracy_std": 0.027166538854505054,
+            "accuracy_std_repeats": 0.008395600699837453,
+            "f1_macro": 0.9304090355859518,
+            "fold_accuracies": [
+              0.9833333333333333,
+              0.9083333333333333,
+              0.8916666666666667,
+              0.9583333333333334,
+              0.9166666666666666,
+              0.95,
+              0.9083333333333333,
+              0.9,
+              0.9666666666666667,
+              0.975,
+              0.9,
+              0.925,
+              0.9333333333333333,
+              0.9416666666666667,
+              0.9083333333333333,
+              0.9083333333333333,
+              0.9333333333333333,
+              0.9,
+              0.9416666666666667,
+              0.9583333333333334
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9879166666666667,
+            "accuracy_std": 0.016345871038277535,
+            "accuracy_std_repeats": 0.006640573937712199,
+            "f1_macro": 0.9879153480890359,
+            "fold_accuracies": [
+              0.9916666666666667,
+              0.9833333333333333,
+              0.95,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.975,
+              0.9583333333333334,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "silhouette": 0.12618893258097588,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9879166666666667
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.05770609975903449,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 0.9970833333333333,
+            "accuracy_std": 0.0039747466725705925,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9970833279079626,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.10168079150011833,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99875
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 0.9966666666666667,
+            "accuracy_std": 0.004082482904638616,
+            "accuracy_std_repeats": 0.0010206207261596538,
+            "f1_macro": 0.9966666630497528,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.0974606830420913,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99875
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -1206,6 +1611,80 @@
           "topological_view": 0.9833333333333334,
           "descriptor_minus_spectral_view": 0.40874999999999984,
           "descriptor_minus_topological_view": 0.005833333333333135
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 0.9991666666666668,
+          "max_attainable_margin": 0.0008333333333332416,
+          "best_structure_baseline": "gradient_stats",
+          "best_structure_baseline_accuracy": 1.0,
+          "best_rich_variant": "topo_multiscale",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 0.9925,
+              "margin_vs_baselines_union": -0.00666666666666671,
+              "margin_vs_baselines_union_ci95": [
+                -0.016666666666666673,
+                0.0004166666666666652
+              ],
+              "margin_vs_best_structure_baseline": -0.007499999999999951,
+              "margin_vs_old_topological_view": 0.009166666666666656,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 0.9879166666666667,
+              "margin_vs_baselines_union": -0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                -0.02458333333333331,
+                -0.0016666666666666607
+              ],
+              "margin_vs_best_structure_baseline": -0.012083333333333335,
+              "margin_vs_old_topological_view": 0.004583333333333273,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0008333333333332416,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.002083333333333326
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.016666666666666607,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 0.99875,
+              "margin_vs_baselines_union": -0.0004166666666667318,
+              "margin_vs_baselines_union_ci95": [
+                -0.0033437499999999874,
+                0.0016666666666666607
+              ],
+              "margin_vs_best_structure_baseline": -0.0012499999999999734,
+              "margin_vs_old_topological_view": 0.015416666666666634,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 0.99875,
+              "margin_vs_baselines_union": -0.0004166666666667318,
+              "margin_vs_baselines_union_ci95": [
+                -0.0033437499999999874,
+                0.0016666666666666607
+              ],
+              "margin_vs_best_structure_baseline": -0.0012499999999999734,
+              "margin_vs_old_topological_view": 0.015416666666666634,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 0.99875,
+            "gain": -0.0004166666666667318,
+            "gain_ci95": [
+              -0.002499999999999991,
+              0.0012499999999999955
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     },
@@ -2069,6 +2548,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 0.9991666666666668
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 0.9945833333333333,
+            "accuracy_std": 0.005448623679425846,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9945751605869363,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.003608439182435148,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.21295996398674724,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666666
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 0.9875,
+            "accuracy_std": 0.008936504412303021,
+            "accuracy_std_repeats": 0.005103103630798306,
+            "f1_macro": 0.9874965292586714,
+            "fold_accuracies": [
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9666666666666667,
+              0.975,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              0.975,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9970833333333333,
+            "accuracy_std": 0.0039747466725705925,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.997083251949946,
+            "fold_accuracies": [
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09223057620667047,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9970833333333333
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 0.9441666666666666,
+            "accuracy_std": 0.017300449576688907,
+            "accuracy_std_repeats": 0.006770032003863317,
+            "f1_macro": 0.9444685291991348,
+            "fold_accuracies": [
+              0.9333333333333333,
+              0.9333333333333333,
+              0.9583333333333334,
+              0.95,
+              0.9666666666666667,
+              0.95,
+              0.9666666666666667,
+              0.9416666666666667,
+              0.975,
+              0.925,
+              0.95,
+              0.925,
+              0.9416666666666667,
+              0.9333333333333333,
+              0.9666666666666667,
+              0.925,
+              0.9166666666666666,
+              0.9166666666666666,
+              0.95,
+              0.9583333333333334
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.007204840194079427,
+            "accuracy_std_repeats": 0.0015590239111558035,
+            "f1_macro": 0.9912465307615328,
+            "fold_accuracies": [
+              0.9833333333333333,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.975,
+              0.9916666666666667
+            ]
+          },
+          "silhouette": 0.12958769610550955,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99125
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.003608439182435148,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2842367434961593,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 0.9937500000000001,
+            "accuracy_std": 0.006387379048648301,
+            "accuracy_std_repeats": 0.0022821773229381843,
+            "f1_macro": 0.9937548673141429,
+            "fold_accuracies": [
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.003608439182435148,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.1823025732888155,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666666
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 0.9945833333333335,
+            "accuracy_std": 0.006052432935972489,
+            "accuracy_std_repeats": 0.0016666666666666607,
+            "f1_macro": 0.9945856446062729,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.003608439182435148,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.1734598140693856,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666666
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -2250,6 +3095,80 @@
           "topological_view": 0.9824999999999999,
           "descriptor_minus_spectral_view": 0.42000000000000015,
           "descriptor_minus_topological_view": 0.008750000000000258
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 0.9979166666666668,
+          "max_attainable_margin": 0.002083333333333215,
+          "best_structure_baseline": "physical_structure_all",
+          "best_structure_baseline_accuracy": 0.9262499999999999,
+          "best_rich_variant": "topo_multiscale",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 0.9970833333333333,
+              "margin_vs_baselines_union": -0.0008333333333334636,
+              "margin_vs_baselines_union_ci95": [
+                -0.0029166666666666564,
+                0.0008333333333333304
+              ],
+              "margin_vs_best_structure_baseline": 0.07083333333333341,
+              "margin_vs_old_topological_view": 0.014583333333333393,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 0.99125,
+              "margin_vs_baselines_union": -0.006666666666666821,
+              "margin_vs_baselines_union_ci95": [
+                -0.017500000000000005,
+                0.0016666666666666607
+              ],
+              "margin_vs_best_structure_baseline": 0.06500000000000006,
+              "margin_vs_old_topological_view": 0.008750000000000036,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.002083333333333215,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.005833333333333313
+              ],
+              "margin_vs_best_structure_baseline": 0.0737500000000001,
+              "margin_vs_old_topological_view": 0.01750000000000007,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 0.9979166666666666,
+              "margin_vs_baselines_union": -2.220446049250313e-16,
+              "margin_vs_baselines_union_ci95": [
+                -0.0012499999999999955,
+                0.0012499999999999955
+              ],
+              "margin_vs_best_structure_baseline": 0.07166666666666666,
+              "margin_vs_old_topological_view": 0.015416666666666634,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 0.9979166666666666,
+              "margin_vs_baselines_union": -2.220446049250313e-16,
+              "margin_vs_baselines_union_ci95": [
+                -0.0012499999999999955,
+                0.0012499999999999955
+              ],
+              "margin_vs_best_structure_baseline": 0.07166666666666666,
+              "margin_vs_old_topological_view": 0.015416666666666634,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 0.9979166666666666,
+            "gain": -2.220446049250313e-16,
+            "gain_ci95": [
+              -0.0012499999999999955,
+              0.0012499999999999955
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     },
@@ -3113,6 +4032,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 1.0
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.19698871430878725,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99375
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 0.9799999999999999,
+            "accuracy_std": 0.016955824957813188,
+            "accuracy_std_repeats": 0.0061237243569579785,
+            "f1_macro": 0.979996091673564,
+            "fold_accuracies": [
+              0.95,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              0.95,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.95,
+              0.975
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9875,
+            "accuracy_std": 0.012500000000000013,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9874980465697764,
+            "fold_accuracies": [
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              0.975
+            ]
+          },
+          "silhouette": 0.21478143824382184,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9875
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.005448623679425847,
+            "accuracy_std_repeats": 0.0024999999999999914,
+            "f1_macro": 0.9987499511699676,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9962500000000001,
+            "accuracy_std": 0.008926785535678569,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9962498535099027,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.33818483376547787,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.99875
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.3484162697424092,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 0.9875,
+            "accuracy_std": 0.016770509831248438,
+            "accuracy_std_repeats": 0.005590169943749504,
+            "f1_macro": 0.9874992186736959,
+            "fold_accuracies": [
+              0.95,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.95,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.26255638429878736,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99375
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.253066646133734,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99375
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -3294,6 +4579,80 @@
           "topological_view": 1.0,
           "descriptor_minus_spectral_view": 0.32125000000000004,
           "descriptor_minus_topological_view": 0.0
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 0.99375,
+          "max_attainable_margin": 0.006249999999999978,
+          "best_structure_baseline": "gradient_stats",
+          "best_structure_baseline_accuracy": 1.0,
+          "best_rich_variant": "topo_multiscale",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 0.9875,
+              "margin_vs_baselines_union": -0.006249999999999978,
+              "margin_vs_baselines_union_ci95": [
+                -0.018750000000000044,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": -0.012499999999999956,
+              "margin_vs_old_topological_view": -0.012499999999999956,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 0.99875,
+              "margin_vs_baselines_union": 0.0050000000000000044,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.015000000000000036
+              ],
+              "margin_vs_best_structure_baseline": -0.0012499999999999734,
+              "margin_vs_old_topological_view": -0.0012499999999999734,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.006249999999999978,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.018750000000000044
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 0.99375,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": -0.006249999999999978,
+              "margin_vs_old_topological_view": -0.006249999999999978,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 0.99375,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": -0.006249999999999978,
+              "margin_vs_old_topological_view": -0.006249999999999978,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 0.99375,
+            "gain": 0.0,
+            "gain_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     },
@@ -4157,6 +5516,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 1.0
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2421956534834427,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 0.99,
+            "accuracy_std": 0.014577379737113264,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9899999023399351,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.27651876478670756,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.4127222827258278,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3960739779687424,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.32302445991292544,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3109690797488554,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -4338,6 +6063,80 @@
           "topological_view": 1.0,
           "descriptor_minus_spectral_view": 0.44625000000000004,
           "descriptor_minus_topological_view": 0.0
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 0.9887499999999999,
+          "max_attainable_margin": 0.011250000000000093,
+          "best_structure_baseline": "okubo_weiss",
+          "best_structure_baseline_accuracy": 1.0,
+          "best_rich_variant": "topo_persistence_image",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.03374999999999999
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.03374999999999999
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.03374999999999999
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.03374999999999999
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.011250000000000093,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.03374999999999999
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 1.0,
+            "gain": 0.011250000000000093,
+            "gain_ci95": [
+              0.0,
+              0.03374999999999999
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     },
@@ -4746,7 +6545,7 @@
             "accuracy": 0.5,
             "accuracy_std": 0.0,
             "accuracy_std_repeats": 0.0,
-            "f1_macro": 0.4989155670094478,
+            "f1_macro": 0.49880576347542105,
             "fold_accuracies": [
               0.5,
               0.5,
@@ -5201,6 +7000,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 1.0
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.24150641740633622,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.27905800539960784,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.40399788872951226,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3758999986902288,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.31492278535762025,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3038028012493154,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -5382,6 +7547,80 @@
           "topological_view": 1.0,
           "descriptor_minus_spectral_view": 0.48250000000000004,
           "descriptor_minus_topological_view": 0.0
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 1.0,
+          "max_attainable_margin": 0.0,
+          "best_structure_baseline": "okubo_weiss",
+          "best_structure_baseline_accuracy": 1.0,
+          "best_rich_variant": "topo_persistence_image",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.0
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.0,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 1.0,
+            "gain": 0.0,
+            "gain_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     },
@@ -6245,6 +8484,372 @@
           "best_classifier": "logreg",
           "best_accuracy": 0.9991666666666668
         },
+        "baselines_union+topo_rich": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004930066485916344,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958333333333333,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666668,
+            "accuracy_std": 0.0036084391824351475,
+            "accuracy_std_repeats": 0.00131761569173682,
+            "f1_macro": 0.9979166467734523,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.0936103724812952,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666668
+        },
+        "topo_persistence_image": {
+          "logreg": {
+            "accuracy": 0.9887500000000001,
+            "accuracy_std": 0.011865859054915124,
+            "accuracy_std_repeats": 0.002124591463996986,
+            "f1_macro": 0.9887494483810746,
+            "fold_accuracies": [
+              1.0,
+              0.9666666666666667,
+              0.975,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              0.9666666666666667,
+              0.9916666666666667,
+              0.975,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9920833333333334,
+            "accuracy_std": 0.008111634305804924,
+            "accuracy_std_repeats": 0.0015590239111558035,
+            "f1_macro": 0.9920830530100764,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.975,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "silhouette": 0.12901093755471554,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9920833333333334
+        },
+        "topo_betti_curves": {
+          "logreg": {
+            "accuracy": 0.9295833333333334,
+            "accuracy_std": 0.026150605474188664,
+            "accuracy_std_repeats": 0.0073833521444455685,
+            "f1_macro": 0.9295756009957999,
+            "fold_accuracies": [
+              0.9833333333333333,
+              0.9,
+              0.9,
+              0.95,
+              0.9166666666666666,
+              0.95,
+              0.9083333333333333,
+              0.9,
+              0.9666666666666667,
+              0.9666666666666667,
+              0.9,
+              0.9083333333333333,
+              0.9333333333333333,
+              0.9333333333333333,
+              0.9083333333333333,
+              0.9166666666666666,
+              0.9333333333333333,
+              0.9083333333333333,
+              0.9416666666666667,
+              0.9666666666666667
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9866666666666666,
+            "accuracy_std": 0.016115899671511443,
+            "accuracy_std_repeats": 0.006400954789890528,
+            "f1_macro": 0.9866653354202256,
+            "fold_accuracies": [
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9416666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.975,
+              0.9666666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "silhouette": 0.12635956931166634,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9866666666666666
+        },
+        "topo_multiscale": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.05770661829145413,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "topo_rich_all": {
+          "logreg": {
+            "accuracy": 0.9970833333333333,
+            "accuracy_std": 0.0039747466725705925,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9970833279079626,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9974999999999999,
+            "accuracy_std": 0.0046398036356916856,
+            "accuracy_std_repeats": 0.0015590239111558035,
+            "f1_macro": 0.9974999674473987,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.1016007483850665,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9974999999999999
+        },
+        "descriptor_rich": {
+          "logreg": {
+            "accuracy": 0.9962500000000001,
+            "accuracy_std": 0.004912427551063163,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.996249998191543,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09738317055863763,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99875
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -6426,6 +9031,80 @@
           "topological_view": 0.9829166666666665,
           "descriptor_minus_spectral_view": 0.40874999999999984,
           "descriptor_minus_topological_view": 0.006249999999999978
+        },
+        "rich_topology": {
+          "baselines_union_accuracy": 0.9991666666666668,
+          "max_attainable_margin": 0.0008333333333332416,
+          "best_structure_baseline": "gradient_stats",
+          "best_structure_baseline_accuracy": 1.0,
+          "best_rich_variant": "topo_multiscale",
+          "variants": {
+            "topo_persistence_image": {
+              "accuracy": 0.9920833333333334,
+              "margin_vs_baselines_union": -0.00708333333333333,
+              "margin_vs_baselines_union_ci95": [
+                -0.016250000000000007,
+                -0.0004166666666666652
+              ],
+              "margin_vs_best_structure_baseline": -0.007916666666666572,
+              "margin_vs_old_topological_view": 0.009166666666666878,
+              "go": false
+            },
+            "topo_betti_curves": {
+              "accuracy": 0.9866666666666666,
+              "margin_vs_baselines_union": -0.012500000000000178,
+              "margin_vs_baselines_union_ci95": [
+                -0.02626041666666666,
+                -0.002083333333333326
+              ],
+              "margin_vs_best_structure_baseline": -0.01333333333333342,
+              "margin_vs_old_topological_view": 0.003750000000000031,
+              "go": false
+            },
+            "topo_multiscale": {
+              "accuracy": 1.0,
+              "margin_vs_baselines_union": 0.0008333333333332416,
+              "margin_vs_baselines_union_ci95": [
+                0.0,
+                0.002083333333333326
+              ],
+              "margin_vs_best_structure_baseline": 0.0,
+              "margin_vs_old_topological_view": 0.01708333333333345,
+              "go": false
+            },
+            "topo_rich_all": {
+              "accuracy": 0.9974999999999999,
+              "margin_vs_baselines_union": -0.0016666666666668162,
+              "margin_vs_baselines_union_ci95": [
+                -0.005416666666666648,
+                0.0008333333333333304
+              ],
+              "margin_vs_best_structure_baseline": -0.0025000000000000577,
+              "margin_vs_old_topological_view": 0.014583333333333393,
+              "go": false
+            },
+            "descriptor_rich": {
+              "accuracy": 0.99875,
+              "margin_vs_baselines_union": -0.0004166666666667318,
+              "margin_vs_baselines_union_ci95": [
+                -0.0033437499999999874,
+                0.0016666666666666607
+              ],
+              "margin_vs_best_structure_baseline": -0.0012499999999999734,
+              "margin_vs_old_topological_view": 0.015833333333333477,
+              "go": false
+            }
+          },
+          "incremental": {
+            "baselines_union_plus_topo_rich_accuracy": 0.9979166666666668,
+            "gain": -0.0012499999999999734,
+            "gain_ci95": [
+              -0.004166666666666652,
+              0.0008333333333333304
+            ]
+          },
+          "any_go": false,
+          "verdict": "NO-GO"
         }
       }
     }
@@ -6607,12 +9286,14 @@
   "go_margin": 0.05,
   "verdict_specified": "GO",
   "verdict_strict": "NO-GO",
+  "verdict_overall": "NO-GO",
+  "verdict_rich_topology": "NO-GO",
+  "rich_topology_go_tasks": [],
+  "verdict_overall_rule": "overall = strict verdict: the specified baselines are blind by construction on this benchmark, so only the strict comparison tests superiority over strong baselines",
   "timing_seconds": {
     "simulation": 847.1183688640594,
     "surrogates": 405.3,
-    "features": 242.2,
-    "total_this_run": 3149.1
-  },
-  "verdict_overall": "NO-GO",
-  "verdict_overall_rule": "overall = strict verdict: the specified baselines are blind by construction on this benchmark, so only the strict comparison tests superiority over strong baselines"
+    "features": 272.9,
+    "total_this_run": 1976.3
+  }
 }

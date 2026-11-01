@@ -56,6 +56,11 @@ baselines (Okubo–Weiss, gradient statistics, increment flatness).
 - But gradient statistics reach 1.000 and Okubo–Weiss 0.974; adding topology
   to all baselines gives +0.000: **NO-GO** against strong baselines.
   Recommendation: SPMAC extended abstract.
+- Follow-up: persistence images, Betti curves and a multi-scale filtration
+  (`src/descriptor/topology_rich.py`) reach parity (0.99–1.00) but never +0.05
+  over all baselines combined; the multi-scale filtration makes topology robust
+  to 0 dB noise (0.60 → 1.00), an edge that disappears when the baselines get
+  the same low-pass. Still **NO-GO**.
 
 Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
 figures in `results/figures/`.

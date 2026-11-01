@@ -30,6 +30,12 @@ diagnostics. Against those, the descriptor ties or loses on every task:
 | binary, k_f = 16 | 1.000 | okubo_weiss 1.000 | 0.000 |
 | 6 classes (k_f × coherent/surrogate) | 0.991 | baselines_union 0.998 | −0.007 [−0.015, 0.000] |
 
+**Follow-up: richer topological vectorizations, still NO-GO.** Persistence
+images, Betti curves and a multi-scale filtration were added to the topological
+view and evaluated on the same benchmark. None reaches +0.05 over
+`baselines_union` on any task or noise condition; see
+[Richer topological vectorizations](#richer-topological-vectorizations-follow-up).
+
 Full tables: `results/hard_benchmark.md` / `.json`. Exploratory noise test:
 `results/noise_sweep.md` / `.json`. Figures: `results/figures/`.
 
@@ -107,6 +113,87 @@ summaries from a coarse 64² sublevel filtration detect coherent vortices at
 just does not capture it *better* than the diagnostics geophysicists already
 use, so it does not support a "better than baselines" GEM paper.
 
+## Richer topological vectorizations (follow-up)
+
+The original topological view compresses each persistence diagram of a 64²
+image into 8 numbers. The obvious objection is that a richer vectorization
+could reveal an advantage the summaries hide. To test that,
+`src/descriptor/topology_rich.py` adds three standard vectorizations of the
+same sublevel-set cubical persistence:
+
+- **Persistence images** (Adams et al. 2017): H0 and H1 diagrams of the
+  full-resolution 256² field, (birth, persistence) coordinates, linear
+  persistence weight, 2 × 10×10 pixels.
+- **Betti curves**: β0(t) and β1(t) on 33 fixed thresholds.
+- **A multi-scale filtration:** periodic Gaussian low-pass at σ = 1, 2, 4,
+  8 grid cells, resampled to 256², 128², 64² and 32², with 16 persistence
+  summaries per scale.
+- **Combinations:** all three concatenated (`topo_rich_all`), and the
+  spectral view plus all three (`descriptor_rich`).
+
+Every hyper-parameter is a fixed constant chosen before any classification
+was run, so nothing is fitted across folds. The old 8-summary view is kept
+as a baseline: at 64² (pre-registered) and at 256² (the resolution-matched
+control). The benchmark is unchanged: same cached fields and surrogates, same
+grouped CV (4 folds × 5 repeats; 3 repeats for the noise conditions) and the
+same paired group-bootstrap CIs. Rule: GO only if some richer vectorization
+beats `baselines_union` (all non-topological baselines concatenated) by at
+least +0.05.
+
+**Verdict: NO-GO. No richer vectorization reaches +0.05 over
+`baselines_union` on any of the 6 clean tasks or 6 noise conditions** (5
+variants × 12 settings = 60 comparisons).
+
+| Setting | `baselines_union` | max attainable margin | old view (64²) | 8 summaries (256²) | pers. images | Betti curves | multi-scale | rich, all | union + rich topo |
+|---|---|---|---|---|---|---|---|---|---|
+| binary, pooled (primary) | 0.999 | +0.001 | 0.983 | 1.000 | 0.993 | 0.988 | 1.000 | 0.999 | 0.999 |
+| 6 classes | 0.998 | +0.002 | 0.982 | 1.000 | 0.997 | 0.991 | 1.000 | 0.998 | 0.998 |
+| noise η = 1, raw | 0.955 | +0.045 | 0.597 | – | 0.896 | 0.845 | **0.999** | 0.991 | 1.000 |
+| noise η = 1, common low-pass | 0.996 | +0.004 | 0.977 | – | 0.969 | 0.994 | 0.994 | 0.998 | 0.991 |
+
+(Per-regime tasks, the IAAFT robustness variant and the η = 0.1 / 0.3
+conditions are in `results/hard_benchmark.md` and `results/noise_sweep.md`;
+the largest margin among them is +0.011.)
+
+What this shows:
+
+1. **The GO threshold is unreachable on this benchmark.** `baselines_union`
+   scores ≥ 0.955 in every setting, so the largest margin *any* feature set
+   could achieve is +0.045 (η = 1, raw). On the clean tasks it is at most
+   +0.011. Making the topological view richer cannot produce a ≥ +0.05
+   margin here, and none did.
+2. **Clean fields: parity, and resolution matters more than vectorization.**
+   Richer vectorizations lift topology from 0.983 to 0.99–1.00, tying
+   `baselines_union`. On the primary task all margins lie in [−0.011, +0.001]
+   and no CI lies above 0. The plain 8 summaries
+   computed at 256² already score 1.000. The gain over the pre-registered
+   64² view comes from resolution, not from the richer vectorization;
+   persistence images (0.993) and Betti curves (0.988) do not beat the
+   resolution-matched 8 summaries.
+3. **Noise: the multi-scale filtration fixes the collapse of the old view,
+   but its edge is denoising, not topology.**
+   - At η = 1 on raw fields, the old 64² view collapses to 0.597 and
+     multi-scale persistence reaches 0.999. That is +0.044 over
+     `baselines_union` (CI [+0.024, +0.067]): below the threshold, at the
+     +0.045 ceiling, and the only setting where any CI lies entirely above 0.
+   - The multi-scale filtration low-passes the field internally. When every
+     feature set gets the same Gaussian low-pass (η = 1, common low-pass),
+     the baselines recover to 0.996 and the margin vanishes (−0.001 for
+     multi-scale; +0.002 [−0.006, +0.012] for the best variant).
+   - Single-resolution vectorizations of the noisy 256² field do worse than
+     the baselines (persistence images −0.059, Betti curves −0.110).
+4. **No incremental value either.** Adding all richer views to
+   `baselines_union` changes accuracy by −0.005 to +0.011 on every setting
+   except η = 1 raw (+0.045). That one gain disappears with the common
+   low-pass (−0.005).
+
+Taken together, the limitation listed earlier is closed. The negative result
+is not an artefact of the 8-number summary: standard, richer vectorizations
+also only reach parity with classical coherent-structure diagnostics. For the
+SPMAC abstract this is a stronger statement, plus one positive,
+reportable property: a multi-scale filtration makes the topological view
+robust to 0 dB observation noise (0.597 → 0.999).
+
 ## Methodological findings (useful regardless of the verdict)
 
 - **Round-off amplitude leak in standardization.** `(w − m) / (std + ε)` has
@@ -138,11 +225,14 @@ use, so it does not support a "better than baselines" GEM paper.
 - One flow family (Kolmogorov-forced 2D turbulence with drag). A different
   flow family could change the ranking, but the IAAFT task is a general
   nonlinearity test that any phase-sensitive statistic tends to pass.
-- The descriptor was evaluated as implemented (8 persistence summaries,
-  64² image), with no tuning. Richer topological vectorizations (persistence
-  images, Betti curves, multi-scale filtrations) were not tested. The
-  full-resolution sensitivity rows (1.000) show that tuning cannot create a
-  margin on a task already at ceiling for the baselines.
+- The pre-registered descriptor is the 8-summary, 64² view, with no tuning.
+  Richer vectorizations (persistence images, Betti curves, a multi-scale
+  filtration) were tested afterwards (see above) and do not change the
+  verdict. Other vectorizations (persistence landscapes, kernels, learned
+  vectorizations) were not tested. Their margin over `baselines_union` is
+  bounded by the same ceiling (≤ +0.045 on this benchmark).
+- Multiple comparisons: 5 richer variants × 12 settings. Reporting the best
+  variant per setting is optimistic, and it still stays below the threshold.
 - "Best of LogReg/RF" is slightly optimistic, equally for every feature set.
 
 ## Recommendation
@@ -155,11 +245,16 @@ use, so it does not support a "better than baselines" GEM paper.
    - the topological view detecting coherent structure at 98–100% where
      spectral and one-point statistics are at chance;
    - an honest parity result against Okubo–Weiss / gradient / intermittency
-     diagnostics;
+     diagnostics, which also holds for persistence images, Betti curves and a
+     multi-scale filtration;
+   - the noise-robustness of the multi-scale filtration (0.597 → 0.999 at
+     0 dB SNR), with the caveat that a common low-pass gives the classical
+     diagnostics the same robustness;
    - the round-off standardization pitfall.
 3. Before reconsidering GEM, a pre-registered experiment would need to show a
    ≥ 0.05 margin over `baselines_union` on a task where classical diagnostics
-   are known to struggle. Candidates are real reanalysis fields with
+   are known to struggle. Its baselines must also receive the same denoising
+   or multi-scale treatment as the topology. Candidates are real reanalysis fields with
    structure-level labels (e.g. blocking vs zonal flow) or regime-transition
    detection. The code here (`src/eval/hard_benchmark.py`, `noise_sweep.py`)
    can be reused for that.
