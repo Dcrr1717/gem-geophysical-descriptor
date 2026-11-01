@@ -111,3 +111,50 @@ def test_evaluate_grouped_separable_vs_random():
     assert r_rnd["best_accuracy"] < 0.7
     ci = paired_bootstrap_margin(r_sep, r_rnd, y, groups, n_boot=200)
     assert ci["ci95"][0] > 0.2
+
+
+# ---------------------------------------------------------------------------
+# Richer topological vectorizations
+# ---------------------------------------------------------------------------
+from src.descriptor.topology_rich import (persistence_image, betti_curve, sublevel_diagrams,
+                                          rich_topology_features, PI_RES, BETTI_THRESHOLDS,
+                                          MS_SCALES)
+
+
+def test_persistence_image_mass_and_shape():
+    pairs = np.array([[0.0, 1.0], [-1.0, 3.0], [0.5, np.inf]])
+    img = persistence_image(pairs)
+    assert img.shape == (PI_RES * PI_RES,) and np.all(img >= 0)
+    # the infinite bar is ignored; an empty diagram gives zeros
+    np.testing.assert_allclose(persistence_image(pairs[:2]), img)
+    assert not persistence_image(np.zeros((0, 2))).any()
+    # a more persistent point carries more weight (linear ramp, saturating at 2)
+    a = persistence_image(np.array([[0.0, 0.5]])).sum()
+    b = persistence_image(np.array([[0.0, 1.5]])).sum()
+    assert b > a > 0
+
+
+def test_betti_curve_counts_alive_bars():
+    pairs = np.array([[-1.0, 1.0], [0.0, np.inf]])
+    bc = betti_curve(pairs, thresholds=np.array([-2.0, -0.5, 0.5, 1.5]))
+    np.testing.assert_array_equal(bc, [0, 1, 2, 1])
+
+
+def test_sublevel_diagram_two_minima():
+    """Two separated wells -> one finite H0 bar (the merge) plus the essential one."""
+    x = np.linspace(-1, 1, 41)
+    X, Y = np.meshgrid(x, x, indexing="ij")
+    f = -np.exp(-((X - 0.5) ** 2 + Y ** 2) / 0.02) - 0.5 * np.exp(-((X + 0.5) ** 2 + Y ** 2) / 0.02)
+    h0, h1 = sublevel_diagrams(f)
+    finite = h0[np.isfinite(h0[:, 1])]
+    assert np.isinf(h0[:, 1]).sum() == 1
+    assert len(finite) == 1 and finite[0, 1] - finite[0, 0] > 0.4
+
+
+def test_rich_topology_features_shapes():
+    w = _standardize(_nongaussian_field())
+    f = rich_topology_features(w)
+    assert f["topo_persistence_image"].shape == (2 * PI_RES * PI_RES,)
+    assert f["topo_betti_curves"].shape == (2 * len(BETTI_THRESHOLDS),)
+    assert f["topo_multiscale"].shape == (16 * len(MS_SCALES),)
+    assert all(np.all(np.isfinite(v)) for v in f.values())
