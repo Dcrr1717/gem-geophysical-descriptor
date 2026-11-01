@@ -1,0 +1,38 @@
+# Tiny, fast configuration that exercises the full hard-benchmark pipeline
+# (simulation -> IAAFT -> features -> grouped CV -> report -> figures) in ~1 min.
+# Numbers from this config are NOT results; use config/hard_benchmark.yaml.
+seed: 0
+go_margin: 0.05
+out_dir: results/smoke
+cache_dir: data/hard_benchmark_smoke
+report_stem: hard_benchmark_smoke
+n_workers: 4
+figures: true
+
+simulation:
+  grid: 64
+  scheme: rk4
+  dt: 0.01
+  nu: 0.005
+  drag: 0.1
+  spinup_time: 5.0
+  snapshot_interval: 1.0
+  snapshots_per_run: 4
+  runs_per_regime: 4
+
+regimes:
+  - {name: kf4,  forcing_wavenumber: 4,  forcing_amp: 0.6}
+  - {name: kf8,  forcing_wavenumber: 8,  forcing_amp: 1.0}
+
+surrogate:
+  n_iter: 30
+  final: spectrum
+  robustness_final: amplitude
+
+descriptor:
+  topo_downsample: 64
+
+evaluation:
+  n_splits: 2
+  n_repeats: 1
+  bootstrap: 200

@@ -22,3 +22,10 @@ classification in geophysical fluids**.
 2. If GO: scale up (larger grids, more regimes, Rayleigh–Bénard), add real
    reanalysis snapshots, ablate the two views, write the paper.
 3. If NO-GO: redesign features or switch to the SPMAC extended abstract.
+
+## Go/No-Go outcome (1 Nov 2026)
+**NO-GO** on the hard structure-only benchmark (coherent turbulence vs IAAFT
+surrogates). The descriptor reaches 0.989, but non-topological physical
+diagnostics match or beat it (gradient statistics 1.000), and topology adds no
+incremental value. Proceed with the SPMAC extended abstract (Plan B). See
+`docs/RESULTS.md`.

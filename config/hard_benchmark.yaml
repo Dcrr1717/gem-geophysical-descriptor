@@ -1,0 +1,57 @@
+# Hard, structure-only GEM Go/No-Go benchmark (the publication-scale run).
+#
+# Class 0 = coherent forced 2D turbulence, class 1 = its IAAFT surrogate
+# (same power spectrum, same one-point histogram, random Fourier phases).
+# Spectrum / moment baselines are blind by construction; any separation must
+# come from spatial (phase) structure.
+#
+# Runtime on 4 CPU cores: ~20 min simulation + ~5 min surrogates/features +
+# ~30 min cross-validation. Results are cached in `cache_dir`.
+seed: 0
+go_margin: 0.05          # descriptor must beat the best baseline by >= 0.05 accuracy
+out_dir: results
+cache_dir: data/hard_benchmark
+report_stem: hard_benchmark
+n_workers: 4
+feature_decimals: 8      # round features to 1e-8 (removes round-off cues; see code)
+figures: true
+
+simulation:
+  grid: 256
+  scheme: rk4            # integrating-factor RK4 (forward Euler is unstable here)
+  dt: 0.005
+  nu: 0.001              # shared viscosity
+  drag: 0.1              # linear (Ekman) drag -> statistically stationary turbulence
+  spinup_time: 25.0      # time units discarded (stationary after ~15 in pilot runs)
+  snapshot_interval: 3.0 # time units between kept snapshots of one trajectory
+  snapshots_per_run: 10
+  runs_per_regime: 8     # independent trajectories (random initial conditions)
+
+# Forcing scales (Kolmogorov forcing amp * k_f * cos(k_f y)); amplitudes chosen in
+# pilot runs so that every regime is turbulent rather than laminar Kolmogorov flow.
+regimes:
+  - {name: kf4,  forcing_wavenumber: 4,  forcing_amp: 0.6}
+  - {name: kf8,  forcing_wavenumber: 8,  forcing_amp: 1.0}
+  - {name: kf16, forcing_wavenumber: 16, forcing_amp: 1.5}
+
+surrogate:
+  n_iter: 100
+  final: spectrum           # PRIMARY: exact (band-limited) spectrum, histogram to ~1e-2 std.
+                            # Conservative: any residual leak favours the one-point baselines.
+  robustness_final: amplitude   # exact histogram, spectrum to ~1e-4 (robustness task)
+
+descriptor:
+  topo_downsample: 64       # pre-registered = repo default; full-res reported as sensitivity only
+
+evaluation:
+  n_splits: 4               # StratifiedGroupKFold, group = trajectory
+  n_repeats: 5
+  bootstrap: 2000
+
+# Exploratory, post-hoc stress test (src/eval/noise_sweep.py) - NOT part of the
+# verdict. Additive white observation noise on both classes (keeps spectrum and
+# histogram matched in expectation), with and without a common Gaussian low-pass.
+noise_sweep:
+  noise_levels: [0.1, 0.3, 1.0]
+  smooth_sigma_px: 2.0
+  n_repeats: 3

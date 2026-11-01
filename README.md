@@ -43,6 +43,30 @@ The default config is a fast local smoke run. For publication-scale runs raise
 `grid`, `n_steps`, `spinup` and `n_snapshots` (see comments in the config) — this
 is the configuration intended for the cloud session.
 
+## Hard structure-only benchmark (1 Nov 2026 Go/No-Go) — result: **NO-GO**
+The toy-regime run above is trivially separable, so a fair, hard benchmark was
+added: coherent 256² turbulence vs **IAAFT surrogates** (`src/sims/surrogate.py`)
+with the same power spectrum and the same value histogram, so only spatial
+(phase) structure differs. Evaluation uses grouped CV by trajectory, ablations of
+both views, a 6-class variant, leak detectors and structure-aware physical
+baselines (Okubo–Weiss, gradient statistics, increment flatness).
+
+- Descriptor 0.989 vs spectrum / moment baselines 0.50 (blind by construction):
+  GO against the baselines named in the brief (+0.207).
+- But gradient statistics reach 1.000 and Okubo–Weiss 0.974; adding topology
+  to all baselines gives +0.000: **NO-GO** against strong baselines.
+  Recommendation: SPMAC extended abstract.
+
+Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
+figures in `results/figures/`.
+
+```bash
+python -m pip install -r requirements.txt gudhi
+python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml        # ~1 h, 4 cores
+python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml        # exploratory
+python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min check
+```
+
 ## Status
 Scaffold + runnable first pass. Known limitations of this first version:
 snapshots within a regime come from one trajectory (temporally correlated);

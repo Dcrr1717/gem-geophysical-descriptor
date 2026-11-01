@@ -33,7 +33,9 @@ def run(config):
     # Standardize each field (zero mean, unit variance) so that raw amplitude /
     # energy cannot be a trivial shortcut: the task becomes one of structure.
     if config.get("standardize", True):
-        fields = [(w - w.mean()) / (w.std() + 1e-8) for w in fields]
+        # No additive epsilon: (w - m) / (s + eps) has std 1 - eps/s and would leak
+        # the original amplitude s at round-off level to scaled classifiers.
+        fields = [(w - w.mean()) / (w.std() if w.std() > 0 else 1.0) for w in fields]
         print("[prep] fields standardized (amplitude cue removed)")
 
     Xd = descriptor_matrix(fields, topo_downsample=config["descriptor"]["topo_downsample"])
