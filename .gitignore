@@ -4,7 +4,11 @@ __pycache__/
 venv/
 env/
 data/
-results/
+# Generated outputs are ignored except the committed hard-benchmark deliverables.
+results/*
+!results/hard_benchmark.md
+!results/hard_benchmark.json
+!results/figures/
 *.npz
 *.npy
 .env
