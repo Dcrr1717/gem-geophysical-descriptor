@@ -78,6 +78,27 @@ python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml        # ex
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min check
 ```
 
+## Real-data benchmark: ERA5 winter blocking vs zonal flow (to be run locally)
+A real-data test of the same question, in a setting chosen to favour topology:
+large-scale flow regimes rather than small-scale structure. ERA5 500 hPa
+winter days (DJF 1979/80–2023/24, Euro-Atlantic) are labelled BLOCKING or
+ZONAL with the Tibaldi–Molteni (1990) gradient-reversal index computed from
+geopotential height. The relative-vorticity fields then go through the
+unchanged descriptor, the baselines, the grouped CV and the verdict rules of
+the hard benchmark. CV groups are whole winters, so consecutive days never
+straddle train and test.
+
+The CDS download needs a free account and runs on your machine; no ERA5 data
+is in the repository and no result exists yet. Steps, credentials and how to
+read the verdict: [`docs/REALDATA.md`](docs/REALDATA.md).
+
+```bash
+python -m pip install -r requirements.txt -r requirements-realdata.txt
+python -m src.realdata.download_era5          --config config/realdata.yaml   # needs ~/.cdsapirc
+python -m src.realdata.label_blocking         --config config/realdata.yaml
+python -m src.realdata.run_realdata_benchmark --config config/realdata.yaml
+```
+
 ## Status
 Scaffold + runnable first pass. Known limitations of this first version:
 snapshots within a regime come from one trajectory (temporally correlated);

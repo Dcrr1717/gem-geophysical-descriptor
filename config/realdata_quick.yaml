@@ -1,0 +1,59 @@
+# Quick end-to-end check of the real-data pipeline on 10 winters (2010/11 - 2019/20).
+# Same area / grid / hours as config/realdata.yaml, so the raw files are reused by
+# the full run. Numbers from this config are a pipeline check, NOT the result.
+seed: 0
+go_margin: 0.05
+n_workers: 4
+out_dir: results/quick
+figures: true
+
+season:
+  months: [12, 1, 2]
+  first: 2010
+  last: 2019
+
+download:
+  dataset: reanalysis-era5-pressure-levels
+  variables: [geopotential, vorticity]
+  pressure_level: 500
+  area: {north: 90, west: -80, south: 25, east: 80}
+  grid: [1.0, 1.0]
+  times: ["12:00"]
+  out_dir: data/era5/raw
+  retries: 3
+  retry_backoff_s: 60
+
+labeling:
+  index: tibaldi_molteni_1990
+  phi_n: 80.0
+  phi_0: 60.0
+  phi_s: 40.0
+  deltas: [-4.0, 0.0, 4.0]
+  ghgs_min: 0.0
+  ghgn_max: -10.0
+  sector: {west: -45, east: 45}
+  min_extent_deg: 15.0
+  min_duration_days: 5
+  zonal_buffer_days: 2
+  zonal_max_ghgs: null
+  output: data/era5/labelled_blocking_quick.npz
+  report_stem: realdata_labels_quick
+
+benchmark:
+  report_stem: realdata_benchmark_quick
+  cache_dir: data/era5
+  domain: {south: 30, north: 85, west: -75, east: 75}
+  grid: 64
+  periodize: taper
+  taper_alpha: 0.25
+  grouping: {mode: season, block_days: 30, gap_days: 5}
+  balance: undersample
+  feature_decimals: 8
+  descriptor:
+    topo_downsample: 64
+    x1: {theta: 0.40, blocks: [8, 8], corr: pearson}
+    x2: {min_pers: 0.01}
+  evaluation:
+    n_splits: 5
+    n_repeats: 2
+    bootstrap: 500

@@ -29,3 +29,12 @@ surrogates). The descriptor reaches 0.989, but non-topological physical
 diagnostics match or beat it (gradient statistics 1.000), and topology adds no
 incremental value. Proceed with the SPMAC extended abstract (Plan B). See
 `docs/RESULTS.md`.
+
+## Real-data follow-up (Nov 2026)
+Before switching to Plan B, one pre-registered real-data test in the setting
+most favourable to topology: ERA5 500 hPa winter blocking vs zonal days
+(Tibaldi–Molteni 1990 labels, Euro-Atlantic sector), evaluated with the
+unchanged descriptor, baselines, grouped CV (groups = winters) and GO rule.
+Pipeline: `src/realdata/`; instructions: `docs/REALDATA.md`. The download runs
+locally (CDS account needed). A GO here would make the synthetic NO-GO the
+negative control of the paper; a NO-GO confirms Plan B.

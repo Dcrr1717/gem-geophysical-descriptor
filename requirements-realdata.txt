@@ -1,0 +1,6 @@
+# Extra dependencies for the ERA5 real-data pipeline (src/realdata, docs/REALDATA.md).
+# Install together with the base requirements:
+#   python -m pip install -r requirements.txt -r requirements-realdata.txt
+cdsapi>=0.7.7     # Copernicus CDS client (current CDS, personal access token)
+xarray>=2023.1    # reading the ERA5 netCDF files
+netCDF4>=1.6      # netCDF backend for xarray

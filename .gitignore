@@ -10,9 +10,16 @@ results/*
 !results/hard_benchmark.json
 !results/noise_sweep.md
 !results/noise_sweep.json
+!results/realdata_labels.md
+!results/realdata_labels.json
+!results/realdata_benchmark.md
+!results/realdata_benchmark.json
 !results/figures/
 *.npz
 *.npy
 .env
+# Copernicus CDS credentials must never be committed
+.cdsapirc
+*.cdsapirc
 .DS_Store
 .ipynb_checkpoints/
