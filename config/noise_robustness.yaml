@@ -1,0 +1,25 @@
+# Pre-registered robustness study (docs/NOISE_ROBUSTNESS.md). Fixed before any
+# degraded condition was evaluated; nothing here is tuned on the results.
+#
+# The base config supplies the simulation, surrogate, descriptor and evaluation
+# settings, so the cached 256^2 coherent fields and IAAFT surrogates are exactly
+# those of the hard benchmark (same cache key).
+base_config: config/hard_benchmark.yaml
+out_dir: results
+figures: true
+
+robustness:
+  feature_cache_dir: data/robustness
+  n_repeats: 3                # repeated StratifiedGroupKFold (4 folds), as in noise_sweep.py
+  levels:                     # 4 levels per degradation model (+ the clean reference)
+    noise: [20, 10, 0, -5]                  # SNR in dB (eta = 0.10, 0.32, 1.00, 1.78)
+    random_mask: [0.05, 0.10, 0.20, 0.40]   # fraction of pixels missing, harmonic infill
+    swath_gaps: [0.05, 0.10, 0.20, 0.40]    # 8-px bands (2, 3, 6, 13 of 32), harmonic infill
+    block_gaps: [0.05, 0.10, 0.20, 0.40]    # 32x32 blocks (3, 6, 13, 26 of 64), harmonic infill
+    quantize: [8, 4, 3, 2]                  # bits on [-4, 4] field std
+    resample: [2, 4, 8, 16]                 # block-mean factor, bilinear back to 256^2
+  rule:
+    min_margin: 0.05          # "real advantage": margin >= +0.05, 95% CI > 0, BH q < 0.05
+    lead_config: topo_multiscale    # the exploratory lead under test (+0.044 at 0 dB)
+    generalization_min_models: 3    # of the 5 models (swath + block count as one: contiguous gaps)
+    topology_specific_min_models: 2 # models where the advantage ALSO holds vs the matched-scale control

@@ -297,7 +297,9 @@ def paired_bootstrap_margin(res_a, res_b, y, groups, n_boot=2000, seed=0):
     diff = (acc_a - acc_b).mean(axis=1)
     point = float((ca.sum(1) / n_g.sum()).mean() - (cb.sum(1) / n_g.sum()).mean())
     lo, hi = np.percentile(diff, [2.5, 97.5])
-    return {"margin": point, "ci95": [float(lo), float(hi)]}
+    # one-sided bootstrap p for H0: margin <= 0 (FDR control across many comparisons)
+    return {"margin": point, "ci95": [float(lo), float(hi)],
+            "p_le_0": float(max((diff <= 0).mean(), 1.0 / n_boot))}
 
 
 def run_task(name, F, y, groups, sets, ev, chance):

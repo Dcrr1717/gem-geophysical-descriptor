@@ -1,0 +1,20 @@
+# Tiny pipeline check for the robustness study (~5 min). Numbers are NOT results.
+base_config: config/hard_benchmark_smoke.yaml
+out_dir: results/smoke
+figures: true
+
+robustness:
+  feature_cache_dir: data/robustness_smoke
+  n_repeats: 1
+  levels:
+    noise: [0]
+    random_mask: [0.2]
+    swath_gaps: [0.2]
+    block_gaps: [0.25]
+    quantize: [3]
+    resample: [4]
+  rule:
+    min_margin: 0.05
+    lead_config: topo_multiscale
+    generalization_min_models: 3
+    topology_specific_min_models: 2
