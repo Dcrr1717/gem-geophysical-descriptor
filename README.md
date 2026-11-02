@@ -67,6 +67,17 @@ baselines (Okubo–Weiss, gradient statistics, increment flatness).
   the physical baselines. The full authentic descriptor X1+X2 and
   X1+X2+richer tie `baselines_union` (best margin over any configuration and
   task +0.011; headroom ≤ 0.011). Still **NO-GO**.
+- Third follow-up, pre-registered: robustness on degraded fields
+  ([`docs/NOISE_ROBUSTNESS.md`](docs/NOISE_ROBUSTNESS.md)). Five realistic
+  degradations were tested at 4 levels each: white noise, random masking,
+  swath / block gaps, quantization and resolution loss. The multi-scale lead
+  **does not generalize**.
+  - A CI-backed ≥ +0.05 advantage over `baselines_union` appears only at
+    −5 dB SNR (+0.287).
+  - It vanishes against the same baselines computed on the same Gaussian
+    pyramid (−0.006): it is smoothing, not topology.
+  - Masking, gaps and quantization leave no headroom (`baselines_union`
+    ≥ 0.995), and resolution loss hurts topology more (−0.139 at ×16).
 
 Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
 figures in `results/figures/`.
@@ -75,6 +86,7 @@ figures in `results/figures/`.
 python -m pip install -r requirements.txt gudhi
 python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml        # ~1 h, 4 cores
 python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml        # exploratory
+python -m src.eval.robustness_sweep --config config/noise_robustness.yaml  # degradations, ~2 h
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min check
 ```
 
