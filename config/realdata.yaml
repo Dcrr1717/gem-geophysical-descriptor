@@ -1,0 +1,68 @@
+# Real-data benchmark: ERA5 500 hPa winter BLOCKING vs ZONAL days (Euro-Atlantic).
+# All three steps read this file:
+#   python -m src.realdata.download_era5          --config config/realdata.yaml
+#   python -m src.realdata.label_blocking         --config config/realdata.yaml
+#   python -m src.realdata.run_realdata_benchmark --config config/realdata.yaml
+# Every parameter below is fixed BEFORE looking at any result (pre-registration).
+# Instructions and interpretation: docs/REALDATA.md.
+seed: 0
+go_margin: 0.05          # same GO rule as the synthetic benchmark
+n_workers: 4             # processes for feature extraction
+out_dir: results         # reports + figures (committed); data/ stays local (git-ignored)
+figures: true
+
+season:
+  months: [12, 1, 2]     # DJF; a season is named by the year of its first month
+  first: 1979            # Dec 1979 - Feb 1980
+  last: 2023             # Dec 2023 - Feb 2024  -> 45 winters, ~4060 days
+
+download:
+  dataset: reanalysis-era5-pressure-levels
+  variables: [geopotential, vorticity]   # netCDF names z (m^2 s^-2) and vo (s^-1)
+  pressure_level: 500
+  # CDS area order is [N, W, S, E]; written as a mapping here to avoid mistakes.
+  # Must cover the index latitudes (36..84N), the labelling sector and the domain.
+  area: {north: 90, west: -80, south: 25, east: 80}
+  grid: [1.0, 1.0]       # regrid on the CDS side (deg lon, deg lat); null = native 0.25
+  times: ["12:00"]       # UTC; several hours -> daily mean
+  out_dir: data/era5/raw
+  retries: 3
+  retry_backoff_s: 60
+
+labeling:
+  index: tibaldi_molteni_1990
+  phi_n: 80.0            # northern latitude (deg N), + delta
+  phi_0: 60.0            # central latitude, + delta
+  phi_s: 40.0            # southern latitude, + delta
+  deltas: [-4.0, 0.0, 4.0]
+  ghgs_min: 0.0          # blocked iff GHGS > 0 m/deg lat  (gradient reversal)
+  ghgn_max: -10.0        # ... and GHGN < -10 m/deg lat     (westerlies to the north)
+  sector: {west: -45, east: 45}    # Euro-Atlantic labelling sector (deg E)
+  min_extent_deg: 15.0   # large-scale criterion: adjacent blocked longitudes span >= 15 deg
+  min_duration_days: 5   # persistence: >= 5 consecutive sector-blocked days
+  zonal_buffer_days: 2   # ZONAL days are > 2 days away from any BLOCKING day
+  zonal_max_ghgs: null   # optional: also require sector-mean GHGS(D=0) <= value (m/deg)
+  output: data/era5/labelled_blocking.npz
+  report_stem: realdata_labels
+
+benchmark:
+  report_stem: realdata_benchmark
+  cache_dir: data/era5
+  domain: {south: 30, north: 85, west: -75, east: 75}
+  grid: 64               # square grid fed to the descriptor (multiple of 8)
+  periodize: taper       # taper | mirror | none
+  taper_alpha: 0.25
+  grouping:
+    mode: season         # season | block
+    block_days: 30       # block mode only
+    gap_days: 5          # block mode only: purge between adjacent blocks
+  balance: undersample   # undersample the majority class -> chance = 0.5
+  feature_decimals: 8
+  descriptor:            # identical to the synthetic hard benchmark
+    topo_downsample: 64
+    x1: {theta: 0.40, blocks: [8, 8], corr: pearson}
+    x2: {min_pers: 0.01}
+  evaluation:
+    n_splits: 5
+    n_repeats: 5
+    bootstrap: 2000
