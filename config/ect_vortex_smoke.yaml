@@ -6,7 +6,6 @@ n_workers: 2
 figures: true
 
 ect_study:
-  feature_cache_dir: data/ect_vortex_smoke
   report_stem: ect_vortex_smoke
   n_repeats: 1
   dect:

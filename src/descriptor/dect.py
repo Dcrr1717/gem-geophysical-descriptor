@@ -86,7 +86,18 @@ if HAS_TORCH:
             return self.head(x.mean(dim=(2, 3)))
 
 
-def _fit_predict(masks, y, tr, te, n, n_classes, hp, seed):
+def _predict(model, masks, idx, chunk=64):
+    """Class predictions of `model` (eval mode) for masks[idx]."""
+    with torch.no_grad():
+        X = torch.from_numpy(masks[idx])
+        return torch.cat([model(X[i:i + chunk].float()).argmax(1)
+                          for i in range(0, len(idx), chunk)]).numpy()
+
+
+def _fit_predict(masks, y, tr, te, n, n_classes, hp, seed, on_epoch=None):
+    """Train one DECT classifier on `tr`, predict `te`. `on_epoch(epoch, model)`,
+    if given, is called after every epoch with the model in eval mode (it does
+    not change the training trajectory)."""
     torch.manual_seed(seed)
     np.random.seed(seed)
     model = DECTClassifier(n, masks.shape[1], n_classes, hp["n_dirs"], hp["n_t"],
@@ -97,7 +108,7 @@ def _fit_predict(masks, y, tr, te, n, n_classes, hp, seed):
     g = torch.Generator().manual_seed(seed)
     bs = int(hp["batch_size"])
     model.train()
-    for _ in range(int(hp["epochs"])):
+    for ep in range(int(hp["epochs"])):
         perm = torch.randperm(len(tr), generator=g)
         for i in range(0, len(tr), bs):
             idx = perm[i:i + bs]
@@ -107,12 +118,12 @@ def _fit_predict(masks, y, tr, te, n, n_classes, hp, seed):
             loss = F.cross_entropy(model(Xtr[idx].float()), ytr[idx])
             loss.backward()
             opt.step()
+        if on_epoch is not None:
+            model.eval()
+            on_epoch(ep, model)
+            model.train()
     model.eval()
-    with torch.no_grad():
-        Xte = torch.from_numpy(masks[te])
-        pred = torch.cat([model(Xte[i:i + 64].float()).argmax(1)
-                          for i in range(0, len(te), 64)])
-    return pred.numpy(), model
+    return _predict(model, masks, te), model
 
 
 def train_eval_grouped(masks, y, groups, n, hp, seed=0, n_splits=4, n_repeats=5,

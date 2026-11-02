@@ -5,7 +5,6 @@ out_dir: results
 n_workers: 4
 
 ect_study:
-  feature_cache_dir: data/ect_vortex
   n_repeats: 3                  # repeated StratifiedGroupKFold (4 folds), as noise_robustness
   dect:
     enabled: true               # needs torch; skipped with a warning if torch is missing

@@ -147,3 +147,12 @@ def test_dect_grouped_training_runs_and_learns_a_trivial_task():
     res = train_eval_grouped(masks, np.array(y), np.array(g), 16, hp, n_splits=3, n_repeats=1)
     assert res["best_classifier"] == "dect" and len(res["dect"]["oof"]) == 1
     assert res["best_accuracy"] >= 0.75
+
+
+def test_boundary_roll_moves_cut_core_inside():
+    from src.eval.ect_diagnostics import roll_quiet_to_edge, touches_edge
+    n = 64
+    w = periodic_gaussian_pair(n, 4.5 * 0.3, 0.3, 10.0, (0.0, 3.0), np.pi / 2)  # cores across x = 0
+    w = (w - w.mean()) / w.std()
+    assert touches_edge(w) and not touches_edge(roll_quiet_to_edge(w))
+    assert core_count(roll_quiet_to_edge(w)) == core_count(w) == 2       # roll is periodic

@@ -19,6 +19,7 @@ results/*
 !results/figures/
 !results/ect_vortex.md
 !results/ect_vortex.json
+!results/ect_vortex_diagnostics.json
 !results/vortex_pilot.json
 !results/vortex_pilot_v1.json
 *.npz
