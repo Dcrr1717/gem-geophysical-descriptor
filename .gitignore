@@ -17,6 +17,10 @@ results/*
 !results/noise_robustness.md
 !results/noise_robustness.json
 !results/figures/
+!results/ect_vortex.md
+!results/ect_vortex.json
+!results/vortex_pilot.json
+!results/vortex_pilot_v1.json
 *.npz
 *.npy
 .env

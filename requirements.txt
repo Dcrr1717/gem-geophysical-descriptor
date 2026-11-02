@@ -7,3 +7,8 @@ matplotlib>=3.7
 networkx>=3.0     # authentic X1 functional-graph view
 # Persistent homology (required by the hard benchmark; the smoke gonogo has a fallback).
 gudhi>=3.8
+# Optional: the differentiable ECT view (src/descriptor/dect.py; config key
+# ect_study.dect.enabled, or --no-dect). Everything else runs without it.
+# A CPU-only build is enough:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.0
