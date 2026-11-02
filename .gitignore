@@ -10,6 +10,8 @@ results/*
 !results/hard_benchmark.json
 !results/noise_sweep.md
 !results/noise_sweep.json
+!results/noise_robustness.md
+!results/noise_robustness.json
 !results/realdata_labels.md
 !results/realdata_labels.json
 !results/realdata_benchmark.md
