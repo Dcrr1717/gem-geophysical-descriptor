@@ -30,6 +30,22 @@ diagnostics. Against those, the descriptor ties or loses on every task:
 | binary, k_f = 16 | 1.000 | okubo_weiss 1.000 | 0.000 |
 | 6 classes (k_f × coherent/surrogate) | 0.991 | baselines_union 0.998 | −0.007 [−0.015, 0.000] |
 
+**Follow-up: richer topological vectorizations, still NO-GO.** Persistence
+images, Betti curves and a multi-scale filtration were added to the topological
+view and evaluated on the same benchmark. None reaches +0.05 over
+`baselines_union` on any task or noise condition; see
+[Richer topological vectorizations](#richer-topological-vectorizations-follow-up).
+
+**Second follow-up: the authentic multiview descriptor, still NO-GO.** The
+authentic functional-graph view X1, missing from this repo until now, was
+ported verbatim from the reference implementation. The benchmark was re-run
+with every view and with the full authentic descriptor X1+X2 and
+X1+X2+richer. **No configuration reaches +0.05 over `baselines_union` on any
+task.** The best margin is +0.011, on the k_f = 8 task, where `baselines_union`
+leaves only 0.011 headroom. X1 on its own is weak (0.69–0.75). It beats the
+old graph-Laplacian view, but it is 0.25–0.31 below `baselines_union`. See
+[Authentic multiview views](#authentic-multiview-views-x1--x2-second-follow-up).
+
 Full tables: `results/hard_benchmark.md` / `.json`. Exploratory noise test:
 `results/noise_sweep.md` / `.json`. Figures: `results/figures/`.
 
@@ -107,6 +123,211 @@ summaries from a coarse 64² sublevel filtration detect coherent vortices at
 just does not capture it *better* than the diagnostics geophysicists already
 use, so it does not support a "better than baselines" GEM paper.
 
+## Richer topological vectorizations (follow-up)
+
+The original topological view compresses each persistence diagram of a 64²
+image into 8 numbers. The obvious objection is that a richer vectorization
+could reveal an advantage the summaries hide. To test that,
+`src/descriptor/topology_rich.py` adds three standard vectorizations of the
+same sublevel-set cubical persistence:
+
+- **Persistence images** (Adams et al. 2017): H0 and H1 diagrams of the
+  full-resolution 256² field, (birth, persistence) coordinates, linear
+  persistence weight, 2 × 10×10 pixels.
+- **Betti curves**: β0(t) and β1(t) on 33 fixed thresholds.
+- **A multi-scale filtration:** periodic Gaussian low-pass at σ = 1, 2, 4,
+  8 grid cells, resampled to 256², 128², 64² and 32², with 16 persistence
+  summaries per scale.
+- **Combinations:** all three concatenated (`topo_rich_all`), and the
+  spectral view plus all three (`descriptor_rich`).
+
+Every hyper-parameter is a fixed constant chosen before any classification
+was run, so nothing is fitted across folds. The old 8-summary view is kept
+as a baseline: at 64² (pre-registered) and at 256² (the resolution-matched
+control). The benchmark is unchanged: same cached fields and surrogates, same
+grouped CV (4 folds × 5 repeats; 3 repeats for the noise conditions) and the
+same paired group-bootstrap CIs. Rule: GO only if some richer vectorization
+beats `baselines_union` (all non-topological baselines concatenated) by at
+least +0.05.
+
+**Verdict: NO-GO. No richer vectorization reaches +0.05 over
+`baselines_union` on any of the 6 clean tasks or 6 noise conditions** (5
+variants × 12 settings = 60 comparisons).
+
+| Setting | `baselines_union` | max attainable margin | old view (64²) | 8 summaries (256²) | pers. images | Betti curves | multi-scale | rich, all | union + rich topo |
+|---|---|---|---|---|---|---|---|---|---|
+| binary, pooled (primary) | 0.999 | +0.001 | 0.983 | 1.000 | 0.993 | 0.988 | 1.000 | 0.999 | 0.999 |
+| 6 classes | 0.998 | +0.002 | 0.982 | 1.000 | 0.997 | 0.991 | 1.000 | 0.998 | 0.998 |
+| noise η = 1, raw | 0.955 | +0.045 | 0.597 | – | 0.896 | 0.845 | **0.999** | 0.991 | 1.000 |
+| noise η = 1, common low-pass | 0.996 | +0.004 | 0.977 | – | 0.969 | 0.994 | 0.994 | 0.998 | 0.991 |
+
+(Per-regime tasks, the IAAFT robustness variant and the η = 0.1 / 0.3
+conditions are in `results/hard_benchmark.md` and `results/noise_sweep.md`;
+the largest margin among them is +0.011.)
+
+What this shows:
+
+1. **The GO threshold is unreachable on this benchmark.** `baselines_union`
+   scores ≥ 0.955 in every setting, so the largest margin *any* feature set
+   could achieve is +0.045 (η = 1, raw). On the clean tasks it is at most
+   +0.011. Making the topological view richer cannot produce a ≥ +0.05
+   margin here, and none did.
+2. **Clean fields: parity, and resolution matters more than vectorization.**
+   Richer vectorizations lift topology from 0.983 to 0.99–1.00, tying
+   `baselines_union`. On the primary task all margins lie in [−0.011, +0.001]
+   and no CI lies above 0. The plain 8 summaries
+   computed at 256² already score 1.000. The gain over the pre-registered
+   64² view comes from resolution, not from the richer vectorization;
+   persistence images (0.993) and Betti curves (0.988) do not beat the
+   resolution-matched 8 summaries.
+3. **Noise: the multi-scale filtration fixes the collapse of the old view,
+   but its edge is denoising, not topology.**
+   - At η = 1 on raw fields, the old 64² view collapses to 0.597 and
+     multi-scale persistence reaches 0.999. That is +0.044 over
+     `baselines_union` (CI [+0.024, +0.067]): below the threshold, at the
+     +0.045 ceiling, and the only setting where any CI lies entirely above 0.
+   - The multi-scale filtration low-passes the field internally. When every
+     feature set gets the same Gaussian low-pass (η = 1, common low-pass),
+     the baselines recover to 0.996 and the margin vanishes (−0.001 for
+     multi-scale; +0.002 [−0.006, +0.012] for the best variant).
+   - Single-resolution vectorizations of the noisy 256² field do worse than
+     the baselines (persistence images −0.059, Betti curves −0.110).
+4. **No incremental value either.** Adding all richer views to
+   `baselines_union` changes accuracy by −0.005 to +0.011 on every setting
+   except η = 1 raw (+0.045). That one gain disappears with the common
+   low-pass (−0.005).
+
+Taken together, the limitation listed earlier is closed. The negative result
+is not an artefact of the 8-number summary: standard, richer vectorizations
+also only reach parity with classical coherent-structure diagnostics. For the
+SPMAC abstract this is a stronger statement, plus one positive,
+reportable property: a multi-scale filtration makes the topological view
+robust to 0 dB observation noise (0.597 → 0.999).
+
+## Authentic multiview views X1 / X2 (second follow-up)
+
+The descriptor in this repo had only two views: a spectral view with a
+graph-Laplacian part, and an 8-number topological view. The multiview
+descriptor of the reference implementation has a different graph view, X1,
+which was missing here.
+
+**What was ported.** `src/descriptor/authentic.py` copies the functions
+verbatim from
+[`Dcrr1717/multiview-nn-descriptor`](https://github.com/Dcrr1717/multiview-nn-descriptor),
+branch `claude/practical-mccarthy-0tj8if`, commit 675269d,
+`topo-spectral-geofluids/tsg/descriptors.py`. A script checks that every
+function body is identical to the source. The ported functions are:
+
+- `region_series`, `graph_invariants`, `x1_functional_graph`;
+- `patch_matrix`, `x1_patch_coherence`;
+- `sig6`, `sublevel_persistence`, `x2_snapshot_ph`, `x2_sublevel_ph`;
+- `desc_x3`.
+
+**The views.**
+
+- **X1** (ℝ¹⁰), the functional graph. The field is cut into 8×8 = 64 mesh
+  regions (the nodes). Two regions are joined when |Pearson| > 0.40. The view
+  is 10 graph invariants: density, average clustering, transitivity, degree
+  mean / std / max fraction, components per node, edges per node, and
+  betweenness mean / std.
+- **X2** (ℝ¹²): six persistence summaries (`sig6`) of H0 and H1 of the
+  periodic sublevel-set filtration, at full 256² resolution.
+- **X1+X2**: the two views concatenated.
+- **X3**: the reference's label-free fusion, [X1/‖X1‖, X2/‖X2‖].
+- **X1+X2+richer**: X1+X2 plus all richer vectorizations from the previous
+  section (352 dimensions).
+- **Each of the above added to `baselines_union`.**
+- **The old Laplacian-spectrum graph view on its own** (`laplacian_view`, the
+  8 eigenvalues that were inside `spectral_view`), kept as the baseline that
+  X1 is compared with.
+
+Every parameter is the reference default, fixed in
+`config/hard_benchmark.yaml` before the run.
+
+**Which X1 mode.** The reference has two X1 modes:
+
+- *Snapshot mode* (`x1_patch_coherence`), the reference's pre-registered
+  primary mode. The samples are the pixels of each region, so an edge means
+  two regions carry coherent spatial patterns.
+- *Window mode* (`x1_functional_graph` on `region_series`). The samples are
+  time instants, so an edge means two regions co-vary in time.
+
+This benchmark classifies single snapshots against per-snapshot 2D IAAFT
+surrogates, so it uses snapshot mode. Window mode is ported and unit-tested
+but not used here. Building windows out of independent per-snapshot
+surrogates would destroy their temporal coherence, and that would be a
+trivial, non-spatial cue.
+
+**Protocol.** Same cached fields and surrogates, same grouped CV (4 folds × 5
+repeats) and same paired group-bootstrap CIs. Rule: GO if any non-baseline
+configuration beats `baselines_union` by at least +0.05 accuracy on any task.
+21 configurations were tested on 6 tasks, including the post-hoc
+`sensitivity` rows. Every number from the earlier runs reproduced exactly in
+this re-run.
+
+**Verdict: NO-GO.** No configuration reaches +0.05 over `baselines_union` on
+any task. None reaches even +0.012.
+
+| Task | `baselines_union` | headroom | X1 | Laplacian view | X2 | X1+X2 | X3 | X1+X2+richer | union + X1+X2+richer | best margin, any config [95% CI] |
+|---|---|---|---|---|---|---|---|---|---|---|
+| binary, pooled (primary) | 0.999 | 0.001 | 0.692 | 0.575 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | +0.001 [+0.000, +0.002] |
+| 6 classes | 0.998 | 0.002 | 0.720 | 0.309 | 1.000 | 1.000 | 0.998 | 0.998 | 1.000 | +0.002 [+0.000, +0.006] |
+| binary, k_f = 4 | 0.994 | 0.006 | 0.710 | 0.666 | 1.000 | 1.000 | 1.000 | 0.999 | 0.995 | +0.006 [+0.000, +0.019] |
+| binary, k_f = 8 | 0.989 | 0.011 | 0.725 | 0.559 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | +0.011 [+0.000, +0.034] |
+| binary, k_f = 16 | 1.000 | 0.000 | 0.754 | 0.515 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | +0.000 |
+| binary, IAAFT histogram-exact | 0.999 | 0.001 | 0.690 | 0.576 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | +0.001 [+0.000, +0.002] |
+
+Headroom = 1 − accuracy of `baselines_union`. It is the largest margin any
+feature set could reach on that task. Ties for the best margin are common: on
+k_f = 8, 17 of the 21 configurations score 1.000. The four that do not are
+X1, X1 added to `baselines_union`, the spectral view and the Laplacian view. Full tables:
+`results/hard_benchmark.md`, section *Authentic X1/X2 and richer topology vs
+baselines_union*. Figure: `results/figures/margin_vs_union.png`.
+
+What this shows:
+
+1. **The GO threshold cannot be reached on this benchmark.**
+   `baselines_union` scores ≥ 0.989 on every clean task, so the largest
+   margin anything could reach is +0.011. The previous follow-up showed the
+   same for the noise conditions: headroom is at most +0.045, at η = 1 on raw
+   fields. The noise sweep was not re-run with X1/X2. Its existing numbers
+   already rule out a GO there for any feature set. All 12 settings have
+   headroom below 0.05.
+2. **X1 is the authentic graph view, and it is weak on this task.**
+   - X1 alone scores 0.69–0.75, far below every structure-aware physical
+     baseline (Okubo–Weiss alone 0.974 on the primary task).
+   - It beats the old graph-Laplacian view on every task: +0.117 [+0.063,
+     +0.171] on the primary task and +0.411 on 6 classes. The exception is
+     k_f = 4 (+0.044, CI includes 0).
+   - Of the two graph views, X1 is the better one. Neither is competitive.
+     Correlations between 32×32-pixel regions in a statistically homogeneous
+     field carry little information that distinguishes coherent vortices from
+     phase-randomized ones.
+   - Adding X1 to `baselines_union` changes nothing: +0.000 on every task.
+3. **X2 is at ceiling, and so is the full authentic descriptor.** X2 is
+   periodic, full-resolution and uses the `sig6` summary. It scores 1.000 on
+   every task, so X1+X2, X3 and X1+X2+richer score 0.998–1.000.
+   - X1+X2 beats the legacy two-view descriptor on the primary task (+0.011
+     [+0.005, +0.018]).
+   - That gain is resolution, not X1. X2 ties exactly with the old 8
+     summaries computed at 256² (`topological_view_fullres`, 1.000), as the
+     previous follow-up found.
+   - Against `baselines_union` every authentic configuration that contains
+     X2 is within [0.000, +0.011].
+   - Across all 21 configurations and 6 tasks, no margin CI has a lower
+     bound above 0.
+4. **No incremental value.** Adding X1, X1+X2 or X1+X2+richer to
+   `baselines_union` gives +0.000 to +0.011, all inside the headroom.
+5. **One large margin, already explained.** X1+X2+richer beats the
+   physical-structure family alone on 6 classes (0.998 vs 0.926, +0.072
+   [+0.041, +0.108]). This is the scale-information effect described in item
+   4 of *Does the topological view add value*. It disappears against
+   `baselines_union`, which also contains the spectral baselines.
+
+So the X1 port does not change the verdict. The authentic multiview
+descriptor, its fusion and its combination with richer topology all tie
+`baselines_union`. The task has no headroom left for a ≥ +0.05 advantage.
+
 ## Methodological findings (useful regardless of the verdict)
 
 - **Round-off amplitude leak in standardization.** `(w − m) / (std + ε)` has
@@ -138,11 +359,24 @@ use, so it does not support a "better than baselines" GEM paper.
 - One flow family (Kolmogorov-forced 2D turbulence with drag). A different
   flow family could change the ranking, but the IAAFT task is a general
   nonlinearity test that any phase-sensitive statistic tends to pass.
-- The descriptor was evaluated as implemented (8 persistence summaries,
-  64² image), with no tuning. Richer topological vectorizations (persistence
-  images, Betti curves, multi-scale filtrations) were not tested. The
-  full-resolution sensitivity rows (1.000) show that tuning cannot create a
-  margin on a task already at ceiling for the baselines.
+- The pre-registered descriptor is the 8-summary, 64² view, with no tuning.
+  Richer vectorizations (persistence images, Betti curves, a multi-scale
+  filtration) were tested afterwards (see above) and do not change the
+  verdict. Other vectorizations (persistence landscapes, kernels, learned
+  vectorizations) were not tested. Their margin over `baselines_union` is
+  bounded by the same ceiling (≤ +0.045 on this benchmark).
+- The authentic X1 view was tested in snapshot mode only, the reference's
+  primary mode. Window mode (regions co-varying in time) needs a space-time
+  surrogate (e.g. 3D IAAFT) and densely sampled windows; neither is part of
+  this benchmark. X1 was tested with the reference parameters only
+  (θ = 0.40, 8×8 regions, Pearson); the reference's sensitivity sweep
+  (θ, patch size, Spearman) was not repeated.
+- The noise sweep was not re-run with X1 / X2. Its existing numbers already
+  bound any feature set's margin over `baselines_union` at +0.045, below the
+  +0.05 threshold.
+- Multiple comparisons: 5 richer variants × 12 settings, then 21
+  configurations × 6 tasks. Reporting the best configuration per task is
+  optimistic, and it still stays below the threshold.
 - "Best of LogReg/RF" is slightly optimistic, equally for every feature set.
 
 ## Recommendation
@@ -155,11 +389,18 @@ use, so it does not support a "better than baselines" GEM paper.
    - the topological view detecting coherent structure at 98–100% where
      spectral and one-point statistics are at chance;
    - an honest parity result against Okubo–Weiss / gradient / intermittency
-     diagnostics;
+     diagnostics. It also holds for persistence images, Betti curves, a
+     multi-scale filtration and the authentic X1+X2 multiview descriptor. The
+     authentic functional-graph view X1 alone is weak (0.69–0.75), although
+     it beats the graph-Laplacian view;
+   - the noise-robustness of the multi-scale filtration (0.597 → 0.999 at
+     0 dB SNR), with the caveat that a common low-pass gives the classical
+     diagnostics the same robustness;
    - the round-off standardization pitfall.
 3. Before reconsidering GEM, a pre-registered experiment would need to show a
    ≥ 0.05 margin over `baselines_union` on a task where classical diagnostics
-   are known to struggle. Candidates are real reanalysis fields with
+   are known to struggle. Its baselines must also receive the same denoising
+   or multi-scale treatment as the topology. Candidates are real reanalysis fields with
    structure-level labels (e.g. blocking vs zonal flow) or regime-transition
    detection. The code here (`src/eval/hard_benchmark.py`, `noise_sweep.py`)
    can be reused for that.
@@ -168,7 +409,7 @@ use, so it does not support a "better than baselines" GEM paper.
 
 ```bash
 pip install -r requirements.txt gudhi
-python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml   # ~1 h on 4 cores
+python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml   # ~1 h on 4 cores (+~30 min simulation without the cache)
 python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml   # ~20 min (uses the cache)
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min pipeline check
 ```

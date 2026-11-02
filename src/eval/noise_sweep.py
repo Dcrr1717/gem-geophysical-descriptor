@@ -35,12 +35,15 @@ import numpy as np
 import yaml
 
 from .hard_benchmark import (generate_coherent, generate_surrogates, compute_features,
-                             run_task, verdicts, _standardize, _strip_oof, FEATURE_SETS)
+                             run_task, verdicts, _standardize, _strip_oof, FEATURE_SETS,
+                             rich_summary_table)
 
 SWEEP_SETS = ["descriptor", "spectral_view", "topological_view", "moments", "spectral_slope",
               "raw_pixels", "power_spectrum", "histogram_quantiles", "okubo_weiss",
               "gradient_stats", "increment_flatness", "physical_structure_all",
-              "baselines_union", "baselines_union+topo"]
+              "baselines_union", "baselines_union+topo",
+              "topo_persistence_image", "topo_betti_curves", "topo_multiscale", "topo_rich_all",
+              "descriptor_rich", "baselines_union+topo_rich"]
 
 
 def _gaussian_lowpass(w, sigma_px):
@@ -112,6 +115,12 @@ def run(cfg):
     (out_dir / "noise_sweep.json").write_text(json.dumps(_strip_oof(res), indent=2))
     write_report(out_dir / "noise_sweep.md", res)
     sweep_figure(res, out_dir / "figures" / "noise_sweep.png")
+    from .hard_figures import rich_margin_figure
+    entries = [(k, c["verdicts"].get("rich_topology")) for k, c in results.items()]
+    if any(v is not None for _, v in entries):
+        rich_margin_figure(entries, out_dir / "figures" / "rich_topology_margins_noise.png",
+                           "Richer topology vs all non-topological baselines (noisy fields)",
+                           go_margin)
     return res
 
 
@@ -139,6 +148,11 @@ def write_report(path, res):
                  f"[{ts['margin_ci95'][0]:+.3f}, {ts['margin_ci95'][1]:+.3f}]; "
                  f"topology added to all baselines: {inc['gain']:+.3f} "
                  f"[{inc['gain_ci95'][0]:+.3f}, {inc['gain_ci95'][1]:+.3f}]")
+    if all("rich_topology" in res["conditions"][c]["verdicts"] for c in conds):
+        L += ["", "## Richer topological vectorizations vs `baselines_union`", "",
+              "Cells: accuracy (margin vs `baselines_union` [95% CI]); `max attainable margin` = "
+              "1 - accuracy of `baselines_union`.", ""]
+        L += rich_summary_table(res["conditions"], conds)
     L += ["", f"Elapsed: {res['seconds']} s (wall clock).", ""]
     path.write_text("\n".join(L) + "\n")
 
@@ -151,7 +165,7 @@ def sweep_figure(res, path):
 
     show = [("descriptor", "#2a78d6", "o"), ("topological_view", "#6250d6", "s"),
             ("gradient_stats", "#eda100", "^"), ("physical_structure_all", "#eb6834", "D"),
-            ("baselines_union", "#1baf7a", "v"), ("baselines_union+topo", "#e87ba4", "P")]
+            ("baselines_union", "#1baf7a", "v"), ("topo_rich_all", "#008300", "P")]
     etas = res["noise_levels"]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), facecolor=SURFACE, sharey=True)
     for ax, mode in zip(axes, ("raw", "smoothed")):
