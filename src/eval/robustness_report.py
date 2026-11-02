@@ -191,7 +191,10 @@ def heatmap_figure(res, path):
                 if _real(e, thr):
                     ax.text(j, i, "★", ha="center", va="center", fontsize=9, color=INK)
         ax.set_yticks(range(len(MARGIN_ROWS)))
-        ax.set_yticklabels(MARGIN_ROWS, fontsize=8, color=INK2)
+        # spell out "x1x2" (some fonts render "1x2" as a multiplication sign)
+        ax.set_yticklabels([k.replace("x1x2", "X1+X2").replace("x1_graph", "X1 graph")
+                            .replace("x2_ph", "X2 PH") for k in MARGIN_ROWS],
+                           fontsize=8, color=INK2)
         ax.set_xticks(range(len(cols)))
         ax.set_xticklabels(labels, rotation=60, ha="right", fontsize=7, color=INK2)
         ax.set_title(f"Topological configurations: {title} (★ = ≥ +{thr:.2f}, CI > 0, q < 0.05)",
@@ -205,8 +208,21 @@ def heatmap_figure(res, path):
     plt.close(fig)
 
 
+def main():
+    """Re-render the figures from results/noise_robustness.json (no re-run)."""
+    import json
+    import sys
+    path = sys.argv[1] if len(sys.argv) > 1 else "results/noise_robustness.json"
+    res = json.load(open(path))
+    make_figures(res, Path(path).parent / "figures")
+
+
 def make_figures(res, out_dir):
     out_dir = Path(out_dir)
     for m in MODELS:
         model_figure(res, m, out_dir / f"robustness_{m}.png")
     heatmap_figure(res, out_dir / "robustness_margin_heatmap.png")
+
+
+if __name__ == "__main__":
+    main()

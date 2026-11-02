@@ -328,6 +328,26 @@ So the X1 port does not change the verdict. The authentic multiview
 descriptor, its fusion and its combination with richer topology all tie
 `baselines_union`. The task has no headroom left for a ≥ +0.05 advantage.
 
+## Degraded fields (third follow-up, pre-registered)
+
+The exploratory noise lead above was tested systematically in
+[`docs/NOISE_ROBUSTNESS.md`](NOISE_ROBUSTNESS.md). The +0.044 at 0 dB was the
+multi-scale filtration vs `baselines_union`. The study used five degradation
+models with 4 levels each: white noise, random masking, swath / block gaps,
+quantization and resolution loss. Every topological configuration was
+compared with `baselines_union` and with a matched-scale control: the same
+baselines on the same Gaussian pyramid.
+
+**The lead does not generalize.**
+
+- A real advantage (≥ +0.05, CI above 0, BH q < 0.05) appears only at −5 dB
+  SNR (+0.287 [+0.253, +0.322]).
+- It disappears against the matched-scale control (−0.006 [−0.017, +0.004]),
+  so it is smoothing, not topology.
+- Missing data and quantization leave no headroom (`baselines_union`
+  ≥ 0.995).
+- Resolution loss hurts topology more than the baselines (−0.139 at ×16).
+
 ## Methodological findings (useful regardless of the verdict)
 
 - **Round-off amplitude leak in standardization.** `(w − m) / (std + ε)` has
