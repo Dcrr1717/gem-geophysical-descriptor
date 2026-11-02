@@ -43,7 +43,18 @@
       "robustness_final": "amplitude"
     },
     "descriptor": {
-      "topo_downsample": 64
+      "topo_downsample": 64,
+      "x1": {
+        "theta": 0.4,
+        "blocks": [
+          8,
+          8
+        ],
+        "corr": "pearson"
+      },
+      "x2": {
+        "min_pers": 0.01
+      }
     },
     "evaluation": {
       "n_splits": 4,
@@ -76,8 +87,8 @@
     "histogram_mismatch_max": 0.07135628049353127,
     "iterations_mean": 100.0,
     "converged_fraction": 0.0,
-    "hermitian_error_max": 3.379076987691126e-16,
-    "seconds": 405.3
+    "hermitian_error_max": 3.379076987691124e-16,
+    "seconds": 68.2
   },
   "surrogate_robustness": {
     "final": "amplitude",
@@ -88,8 +99,8 @@
     "histogram_mismatch_max": 8.881784197001254e-16,
     "iterations_mean": 100.0,
     "converged_fraction": 0.0,
-    "hermitian_error_max": 3.433160230163525e-16,
-    "seconds": 404.6
+    "hermitian_error_max": 3.4331602301635236e-16,
+    "seconds": 66.9
   },
   "feature_sets": {
     "descriptor": {
@@ -105,6 +116,11 @@
     "topological_view": {
       "tier": "ours-ablation",
       "description": "topological view only (sublevel-set PH, H0/H1 statistics)",
+      "dim": 8
+    },
+    "laplacian_view": {
+      "tier": "graph-laplacian",
+      "description": "existing graph view alone: 8 smallest normalized-Laplacian eigenvalues of the 16x16 similarity grid graph",
       "dim": 8
     },
     "moments": {
@@ -167,6 +183,21 @@
       "description": "baselines_union + all richer topological views",
       "dim": 466
     },
+    "baselines_union+x1": {
+      "tier": "incremental",
+      "description": "baselines_union + X1",
+      "dim": 146
+    },
+    "baselines_union+x1x2": {
+      "tier": "incremental",
+      "description": "baselines_union + X1 + X2",
+      "dim": 158
+    },
+    "baselines_union+x1x2_rich": {
+      "tier": "incremental",
+      "description": "baselines_union + X1 + X2 + all richer topological views",
+      "dim": 488
+    },
     "topo_persistence_image": {
       "tier": "ours-rich",
       "description": "persistence images of H0/H1 (2 x 10x10), full-resolution field",
@@ -191,6 +222,31 @@
       "tier": "ours-rich",
       "description": "spectral view + all richer topological views",
       "dim": 341
+    },
+    "x1_graph": {
+      "tier": "authentic",
+      "description": "X1: 10 functional-graph invariants, |Pearson| > 0.40 between 8x8 = 64 mesh regions (snapshot mode)",
+      "dim": 10
+    },
+    "x2_ph": {
+      "tier": "authentic",
+      "description": "X2: sig6 summaries of H0/H1, periodic sublevel-set PH at full resolution",
+      "dim": 12
+    },
+    "x1x2": {
+      "tier": "authentic",
+      "description": "authentic descriptor X1 + X2 (concatenated)",
+      "dim": 22
+    },
+    "x3_fusion": {
+      "tier": "authentic",
+      "description": "X3 = [X1/|X1|, X2/|X2|], the original label-free fusion",
+      "dim": 22
+    },
+    "x1x2_rich": {
+      "tier": "authentic",
+      "description": "X1 + X2 + all richer topological views",
+      "dim": 352
     },
     "topological_view_fullres": {
       "tier": "sensitivity",
@@ -393,6 +449,67 @@
           "best_classifier": "rf",
           "best_accuracy": 0.9833333333333334
         },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.5754166666666667,
+            "accuracy_std": 0.05667126206856915,
+            "accuracy_std_repeats": 0.010491398593345155,
+            "f1_macro": 0.5751421741263293,
+            "fold_accuracies": [
+              0.5333333333333333,
+              0.625,
+              0.5833333333333334,
+              0.5833333333333334,
+              0.6166666666666667,
+              0.5583333333333333,
+              0.5416666666666666,
+              0.6333333333333333,
+              0.5666666666666667,
+              0.625,
+              0.525,
+              0.6083333333333333,
+              0.5166666666666667,
+              0.5833333333333334,
+              0.6833333333333333,
+              0.49166666666666664,
+              0.625,
+              0.6416666666666667,
+              0.5083333333333333,
+              0.4583333333333333
+            ]
+          },
+          "rf": {
+            "accuracy": 0.5433333333333333,
+            "accuracy_std": 0.04461252938108058,
+            "accuracy_std_repeats": 0.012665570127975551,
+            "f1_macro": 0.5432828176999556,
+            "fold_accuracies": [
+              0.5583333333333333,
+              0.6,
+              0.5083333333333333,
+              0.5416666666666666,
+              0.5333333333333333,
+              0.5416666666666666,
+              0.48333333333333334,
+              0.6166666666666667,
+              0.5583333333333333,
+              0.5916666666666667,
+              0.5,
+              0.55,
+              0.5166666666666667,
+              0.6333333333333333,
+              0.5666666666666667,
+              0.49166666666666664,
+              0.5583333333333333,
+              0.5583333333333333,
+              0.5,
+              0.4583333333333333
+            ]
+          },
+          "silhouette": 0.008375537459930917,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.5754166666666667
+        },
         "moments": {
           "logreg": {
             "accuracy": 0.5,
@@ -487,7 +604,7 @@
             "accuracy": 0.5,
             "accuracy_std": 0.0,
             "accuracy_std_repeats": 0.0,
-            "f1_macro": 0.4971178403335351,
+            "f1_macro": 0.49698422159526523,
             "fold_accuracies": [
               0.5,
               0.5,
@@ -1125,6 +1242,189 @@
           "best_classifier": "rf",
           "best_accuracy": 0.99875
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 0.9991666666666668,
+            "accuracy_std": 0.0036324157862839056,
+            "accuracy_std_repeats": 0.001666666666666661,
+            "f1_macro": 0.999166652198823,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9904166666666667,
+            "accuracy_std": 0.0129836970424024,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9904158437402035,
+            "fold_accuracies": [
+              0.9916666666666667,
+              0.9666666666666667,
+              1.0,
+              1.0,
+              0.975,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9666666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9583333333333334,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.07273886033273066,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.9991666666666668
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9991666666666668,
+            "accuracy_std": 0.0024999999999999914,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9991666630497529,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.08862227179076469,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004930066485916344,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958333333333333,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09491657646039467,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 0.9887499999999999,
@@ -1430,6 +1730,311 @@
           "best_classifier": "rf",
           "best_accuracy": 0.99875
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.6695833333333334,
+            "accuracy_std": 0.03615888933274608,
+            "accuracy_std_repeats": 0.008994597143717895,
+            "f1_macro": 0.6693541776572888,
+            "fold_accuracies": [
+              0.7083333333333334,
+              0.6333333333333333,
+              0.6833333333333333,
+              0.6833333333333333,
+              0.6666666666666666,
+              0.7166666666666667,
+              0.5916666666666667,
+              0.6833333333333333,
+              0.6333333333333333,
+              0.725,
+              0.6833333333333333,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.675,
+              0.675,
+              0.6833333333333333,
+              0.6916666666666667,
+              0.6833333333333333,
+              0.6666666666666666,
+              0.575
+            ]
+          },
+          "rf": {
+            "accuracy": 0.6920833333333333,
+            "accuracy_std": 0.03559757716474535,
+            "accuracy_std_repeats": 0.007728015412913094,
+            "f1_macro": 0.6917794516290124,
+            "fold_accuracies": [
+              0.7416666666666667,
+              0.65,
+              0.6833333333333333,
+              0.7083333333333334,
+              0.75,
+              0.6583333333333333,
+              0.6916666666666667,
+              0.625,
+              0.675,
+              0.7083333333333334,
+              0.725,
+              0.6416666666666667,
+              0.7166666666666667,
+              0.6666666666666666,
+              0.65,
+              0.7333333333333333,
+              0.7083333333333334,
+              0.6666666666666666,
+              0.7333333333333333,
+              0.7083333333333334
+            ]
+          },
+          "silhouette": 0.009873803369542617,
+          "best_classifier": "rf",
+          "best_accuracy": 0.6920833333333333
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 0.9995833333333334,
+            "accuracy_std": 0.0018162078931419406,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.9995833315248763,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.18293390311974206,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.13333077478171715,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 0.9974999999999999,
+            "accuracy_std": 0.0046398036356916856,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.9974999782983286,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.25037216034564536,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9970833333333333,
+            "accuracy_std": 0.0039747466725705925,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9970833279079626,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.10221751190373442,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -1686,6 +2291,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 0.9991666666666668,
+        "headroom": 0.0008333333333332416,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 0.9891666666666665,
+            "margin": -0.010000000000000231,
+            "margin_ci95": [
+              -0.01708333333333334,
+              -0.004166666666666652
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.5804166666666667,
+            "margin": -0.41875000000000007,
+            "margin_ci95": [
+              -0.4570937500000001,
+              -0.3770729166666667
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 0.9833333333333334,
+            "margin": -0.015833333333333366,
+            "margin_ci95": [
+              -0.026260416666666682,
+              -0.006249999999999978
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.5754166666666667,
+            "margin": -0.42375000000000007,
+            "margin_ci95": [
+              -0.4637604166666667,
+              -0.38083333333333336
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 0.9991666666666668,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 0.99875,
+            "margin": -0.0004166666666667318,
+            "margin_ci95": [
+              -0.002499999999999991,
+              0.0012499999999999955
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 0.9991666666666668,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 0.9925,
+            "margin": -0.00666666666666671,
+            "margin_ci95": [
+              -0.016666666666666673,
+              0.0004166666666666652
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 0.9879166666666667,
+            "margin": -0.011250000000000093,
+            "margin_ci95": [
+              -0.02458333333333331,
+              -0.0016666666666666607
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 0.99875,
+            "margin": -0.0004166666666667318,
+            "margin_ci95": [
+              -0.0033437499999999874,
+              0.0016666666666666607
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 0.99875,
+            "margin": -0.0004166666666667318,
+            "margin_ci95": [
+              -0.0033437499999999874,
+              0.0016666666666666607
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.6920833333333333,
+            "margin": -0.3070833333333335,
+            "margin_ci95": [
+              -0.3383333333333334,
+              -0.2745729166666667
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.0008333333333332416,
+        "best_margin_ci95": [
+          0.0,
+          0.002083333333333326
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.5754166666666667,
+            "accuracy": 0.6920833333333333,
+            "margin": 0.11666666666666659,
+            "margin_ci95": [
+              0.06291666666666669,
+              0.17125
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 0.9891666666666665,
+            "accuracy": 1.0,
+            "margin": 0.010833333333333472,
+            "margin_ci95": [
+              0.004583333333333317,
+              0.01791666666666667
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 0.9833333333333334,
+            "accuracy": 1.0,
+            "margin": 0.016666666666666607,
+            "margin_ci95": [
+              0.006666666666666643,
+              0.028333333333333342
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 0.9974999999999999,
+            "accuracy": 1.0,
+            "margin": 0.0025000000000000577,
+            "margin_ci95": [
+              0.0,
+              0.007083333333333308
+            ]
+          }
+        }
       }
     },
     "multiclass6": {
@@ -1876,6 +2755,67 @@
           "silhouette": 0.19887380846698086,
           "best_classifier": "rf",
           "best_accuracy": 0.9824999999999999
+        },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.30875,
+            "accuracy_std": 0.02794774389622334,
+            "accuracy_std_repeats": 0.012104865871944955,
+            "f1_macro": 0.2966671595771049,
+            "fold_accuracies": [
+              0.31666666666666665,
+              0.3416666666666667,
+              0.3,
+              0.2833333333333333,
+              0.2916666666666667,
+              0.31666666666666665,
+              0.38333333333333336,
+              0.325,
+              0.2916666666666667,
+              0.325,
+              0.325,
+              0.2916666666666667,
+              0.35,
+              0.2916666666666667,
+              0.3,
+              0.275,
+              0.3,
+              0.26666666666666666,
+              0.275,
+              0.325
+            ]
+          },
+          "rf": {
+            "accuracy": 0.25958333333333333,
+            "accuracy_std": 0.03448781991112547,
+            "accuracy_std_repeats": 0.005980291706003052,
+            "f1_macro": 0.24914577690778103,
+            "fold_accuracies": [
+              0.25,
+              0.26666666666666666,
+              0.2833333333333333,
+              0.24166666666666667,
+              0.2833333333333333,
+              0.275,
+              0.2916666666666667,
+              0.2,
+              0.25,
+              0.30833333333333335,
+              0.2916666666666667,
+              0.20833333333333334,
+              0.25,
+              0.225,
+              0.30833333333333335,
+              0.26666666666666666,
+              0.18333333333333332,
+              0.25,
+              0.25833333333333336,
+              0.3
+            ]
+          },
+          "silhouette": -0.04294170526519683,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.30875
         },
         "moments": {
           "logreg": {
@@ -2609,6 +3549,189 @@
           "best_classifier": "rf",
           "best_accuracy": 0.9979166666666666
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 0.9979166666666668,
+            "accuracy_std": 0.004468252206151506,
+            "accuracy_std_repeats": 0.00131761569173682,
+            "f1_macro": 0.9979164876079526,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9854166666666666,
+            "accuracy_std": 0.01340475661845452,
+            "accuracy_std_repeats": 0.0022821773229382246,
+            "f1_macro": 0.9854060279442812,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              0.975,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9666666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.95,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9666666666666667,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              0.9666666666666667
+            ]
+          },
+          "silhouette": 0.20627692792847668,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.9979166666666668
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.25580806854878224,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004930066485916344,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958331705665586,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.21927039204094204,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 0.9875,
@@ -2914,6 +4037,311 @@
           "best_classifier": "rf",
           "best_accuracy": 0.9979166666666666
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.72,
+            "accuracy_std": 0.026925824035672515,
+            "accuracy_std_repeats": 0.003118047822311607,
+            "f1_macro": 0.7199970686141791,
+            "fold_accuracies": [
+              0.7333333333333333,
+              0.7,
+              0.7333333333333333,
+              0.725,
+              0.7083333333333334,
+              0.675,
+              0.7333333333333333,
+              0.7666666666666667,
+              0.7333333333333333,
+              0.7083333333333334,
+              0.725,
+              0.6916666666666667,
+              0.7416666666666667,
+              0.7166666666666667,
+              0.6583333333333333,
+              0.7583333333333333,
+              0.7166666666666667,
+              0.6916666666666667,
+              0.725,
+              0.7583333333333333
+            ]
+          },
+          "rf": {
+            "accuracy": 0.6908333333333333,
+            "accuracy_std": 0.03943172721440327,
+            "accuracy_std_repeats": 0.015734339657082652,
+            "f1_macro": 0.6905139720296137,
+            "fold_accuracies": [
+              0.675,
+              0.6833333333333333,
+              0.675,
+              0.7083333333333334,
+              0.6833333333333333,
+              0.7083333333333334,
+              0.6916666666666667,
+              0.7166666666666667,
+              0.6833333333333333,
+              0.775,
+              0.7333333333333333,
+              0.675,
+              0.6916666666666667,
+              0.7083333333333334,
+              0.575,
+              0.7416666666666667,
+              0.675,
+              0.7,
+              0.6333333333333333,
+              0.6833333333333333
+            ]
+          },
+          "silhouette": 0.06636957015260152,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.72
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 0.9995833333333334,
+            "accuracy_std": 0.0018162078931419406,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.9995833170566559,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.48196423333201976,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.4266536120732109,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004166666666666653,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958333333333332,
+            "fold_accuracies": [
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.0036084391824351483,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667
+            ]
+          },
+          "silhouette": 0.3685597695690176,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666666
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9950000000000001,
+            "accuracy_std": 0.00552770798392567,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9949997395578987,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9979166666666666,
+            "accuracy_std": 0.003608439182435148,
+            "accuracy_std_repeats": 1.1102230246251565e-16,
+            "f1_macro": 0.9979165852832793,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.1962488115375984,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9979166666666666
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -3170,6 +4598,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 0.9979166666666668,
+        "headroom": 0.002083333333333215,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 0.9912500000000002,
+            "margin": -0.006666666666666599,
+            "margin_ci95": [
+              -0.01541666666666668,
+              0.0004166666666666652
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.57125,
+            "margin": -0.42666666666666675,
+            "margin_ci95": [
+              -0.4720833333333333,
+              -0.3787395833333334
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 0.9824999999999999,
+            "margin": -0.015416666666666856,
+            "margin_ci95": [
+              -0.026666666666666682,
+              -0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.30875,
+            "margin": -0.6891666666666667,
+            "margin_ci95": [
+              -0.7445833333333333,
+              -0.6341666666666667
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 0.9991666666666668,
+            "margin": 0.0012499999999999734,
+            "margin_ci95": [
+              0.0,
+              0.003749999999999987
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 0.9979166666666666,
+            "margin": -2.220446049250313e-16,
+            "margin_ci95": [
+              -0.0012499999999999955,
+              0.0012499999999999955
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 0.9979166666666668,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 0.9970833333333333,
+            "margin": -0.0008333333333334636,
+            "margin_ci95": [
+              -0.0029166666666666564,
+              0.0008333333333333304
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 0.99125,
+            "margin": -0.006666666666666821,
+            "margin_ci95": [
+              -0.017500000000000005,
+              0.0016666666666666607
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 0.9979166666666666,
+            "margin": -2.220446049250313e-16,
+            "margin_ci95": [
+              -0.0012499999999999955,
+              0.0012499999999999955
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 0.9979166666666666,
+            "margin": -2.220446049250313e-16,
+            "margin_ci95": [
+              -0.0012499999999999955,
+              0.0012499999999999955
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.72,
+            "margin": -0.2779166666666668,
+            "margin_ci95": [
+              -0.31042708333333335,
+              -0.24583333333333335
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 0.9979166666666666,
+            "margin": -2.220446049250313e-16,
+            "margin_ci95": [
+              -0.005833333333333313,
+              0.004999999999999982
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 0.9979166666666666,
+            "margin": -2.220446049250313e-16,
+            "margin_ci95": [
+              -0.0012499999999999955,
+              0.0012499999999999955
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.002083333333333215,
+            "margin_ci95": [
+              0.0,
+              0.005833333333333313
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.002083333333333215,
+        "best_margin_ci95": [
+          0.0,
+          0.005833333333333313
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.30875,
+            "accuracy": 0.72,
+            "margin": 0.41124999999999995,
+            "margin_ci95": [
+              0.34873958333333327,
+              0.47208333333333324
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 0.9912500000000002,
+            "accuracy": 1.0,
+            "margin": 0.008749999999999813,
+            "margin_ci95": [
+              0.002083333333333326,
+              0.01749999999999998
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 0.9824999999999999,
+            "accuracy": 1.0,
+            "margin": 0.01750000000000007,
+            "margin_ci95": [
+              0.006666666666666643,
+              0.030416666666666668
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 0.9979166666666666,
+            "margin": -0.002083333333333437,
+            "margin_ci95": [
+              -0.006249999999999978,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 0.9262499999999999,
+            "accuracy": 0.9979166666666666,
+            "margin": 0.07166666666666666,
+            "margin_ci95": [
+              0.04082291666666663,
+              0.10793749999999988
+            ]
+          }
+        }
       }
     },
     "binary_kf4": {
@@ -3360,6 +5062,67 @@
           "silhouette": 0.2810871274909843,
           "best_classifier": "logreg",
           "best_accuracy": 1.0
+        },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.66625,
+            "accuracy_std": 0.0746973058416433,
+            "accuracy_std_repeats": 0.01610512340840642,
+            "f1_macro": 0.6657496733489985,
+            "fold_accuracies": [
+              0.775,
+              0.55,
+              0.65,
+              0.775,
+              0.625,
+              0.65,
+              0.7,
+              0.7,
+              0.75,
+              0.675,
+              0.7,
+              0.55,
+              0.65,
+              0.675,
+              0.7,
+              0.525,
+              0.7,
+              0.65,
+              0.775,
+              0.55
+            ]
+          },
+          "rf": {
+            "accuracy": 0.6537499999999999,
+            "accuracy_std": 0.0449131105580542,
+            "accuracy_std_repeats": 0.01837117307087384,
+            "f1_macro": 0.6534913953359164,
+            "fold_accuracies": [
+              0.7,
+              0.625,
+              0.625,
+              0.7,
+              0.65,
+              0.675,
+              0.675,
+              0.6,
+              0.7,
+              0.675,
+              0.6,
+              0.625,
+              0.65,
+              0.675,
+              0.525,
+              0.65,
+              0.7,
+              0.7,
+              0.7,
+              0.625
+            ]
+          },
+          "silhouette": 0.06267189631822093,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.66625
         },
         "moments": {
           "logreg": {
@@ -4093,6 +5856,189 @@
           "best_classifier": "rf",
           "best_accuracy": 0.99375
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9737500000000001,
+            "accuracy_std": 0.021614520582238235,
+            "accuracy_std_repeats": 0.002499999999999991,
+            "f1_macro": 0.9737313827006983,
+            "fold_accuracies": [
+              0.975,
+              0.95,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              0.925,
+              1.0,
+              0.95,
+              0.975,
+              1.0,
+              0.95,
+              0.95,
+              0.975,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              0.975,
+              0.95
+            ]
+          },
+          "silhouette": 0.06223689088846686,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.99375
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09650221389305572,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9949999999999999,
+            "accuracy_std": 0.010000000000000009,
+            "accuracy_std_repeats": 0.002499999999999991,
+            "f1_macro": 0.9949998046798703,
+            "fold_accuracies": [
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              0.975
+            ]
+          },
+          "silhouette": 0.19884769791392296,
+          "best_classifier": "rf",
+          "best_accuracy": 0.9949999999999999
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 0.9799999999999999,
@@ -4398,6 +6344,311 @@
           "best_classifier": "rf",
           "best_accuracy": 0.99375
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.7100000000000001,
+            "accuracy_std": 0.02893959225697555,
+            "accuracy_std_repeats": 0.008477912478906582,
+            "f1_macro": 0.7089505720074778,
+            "fold_accuracies": [
+              0.7,
+              0.725,
+              0.7,
+              0.7,
+              0.75,
+              0.75,
+              0.725,
+              0.675,
+              0.75,
+              0.675,
+              0.675,
+              0.725,
+              0.725,
+              0.675,
+              0.75,
+              0.65,
+              0.725,
+              0.7,
+              0.7,
+              0.725
+            ]
+          },
+          "rf": {
+            "accuracy": 0.64875,
+            "accuracy_std": 0.05941117319158072,
+            "accuracy_std_repeats": 0.022844583603121357,
+            "f1_macro": 0.6486845014333656,
+            "fold_accuracies": [
+              0.6,
+              0.725,
+              0.5,
+              0.6,
+              0.725,
+              0.675,
+              0.6,
+              0.6,
+              0.675,
+              0.625,
+              0.6,
+              0.725,
+              0.65,
+              0.625,
+              0.7,
+              0.65,
+              0.725,
+              0.65,
+              0.6,
+              0.725
+            ]
+          },
+          "silhouette": 0.05187499705740177,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.7100000000000001
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.42657789547353697,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.272685888390212,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2940545983634486,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.005448623679425847,
+            "accuracy_std_repeats": 0.0024999999999999914,
+            "f1_macro": 0.9987499511699676,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2580799736992262,
+          "best_classifier": "rf",
+          "best_accuracy": 0.99875
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -4654,6 +6905,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 0.99375,
+        "headroom": 0.006249999999999978,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.67875,
+            "margin": -0.31500000000000006,
+            "margin_ci95": [
+              -0.375,
+              -0.2612187500000001
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.66625,
+            "margin": -0.3275,
+            "margin_ci95": [
+              -0.3900000000000001,
+              -0.26746875000000014
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 0.99375,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 0.99375,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 0.9949999999999999,
+            "margin": 0.0012499999999998623,
+            "margin_ci95": [
+              0.0,
+              0.003750000000000009
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 0.9875,
+            "margin": -0.006249999999999978,
+            "margin_ci95": [
+              -0.018750000000000044,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 0.99875,
+            "margin": 0.0050000000000000044,
+            "margin_ci95": [
+              0.0,
+              0.015000000000000036
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 0.99375,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 0.99375,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.7100000000000001,
+            "margin": -0.28374999999999995,
+            "margin_ci95": [
+              -0.31499999999999995,
+              -0.255
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 0.99875,
+            "margin": 0.0050000000000000044,
+            "margin_ci95": [
+              0.0,
+              0.015000000000000036
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.006249999999999978,
+            "margin_ci95": [
+              0.0,
+              0.018750000000000044
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "descriptor",
+        "best_margin": 0.006249999999999978,
+        "best_margin_ci95": [
+          0.0,
+          0.018750000000000044
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.66625,
+            "accuracy": 0.7100000000000001,
+            "margin": 0.04375000000000007,
+            "margin_ci95": [
+              -0.023781250000000025,
+              0.12250000000000001
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 0.99875,
+            "margin": -0.0012499999999999734,
+            "margin_ci95": [
+              -0.003750000000000009,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 0.9962500000000001,
+            "accuracy": 0.99875,
+            "margin": 0.0024999999999999467,
+            "margin_ci95": [
+              0.0,
+              0.007500000000000018
+            ]
+          }
+        }
       }
     },
     "binary_kf8": {
@@ -4844,6 +7369,67 @@
           "silhouette": 0.3575133888472946,
           "best_classifier": "logreg",
           "best_accuracy": 1.0
+        },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.5587500000000001,
+            "accuracy_std": 0.06137741848595459,
+            "accuracy_std_repeats": 0.028394541729001372,
+            "f1_macro": 0.5584609335290862,
+            "fold_accuracies": [
+              0.575,
+              0.475,
+              0.625,
+              0.575,
+              0.6,
+              0.45,
+              0.6,
+              0.625,
+              0.525,
+              0.575,
+              0.625,
+              0.475,
+              0.675,
+              0.575,
+              0.55,
+              0.6,
+              0.525,
+              0.475,
+              0.575,
+              0.475
+            ]
+          },
+          "rf": {
+            "accuracy": 0.5387500000000001,
+            "accuracy_std": 0.06683702192647425,
+            "accuracy_std_repeats": 0.026634094690828156,
+            "f1_macro": 0.5376443380791949,
+            "fold_accuracies": [
+              0.5,
+              0.45,
+              0.65,
+              0.5,
+              0.6,
+              0.45,
+              0.65,
+              0.625,
+              0.525,
+              0.575,
+              0.625,
+              0.45,
+              0.575,
+              0.575,
+              0.475,
+              0.55,
+              0.55,
+              0.5,
+              0.5,
+              0.45
+            ]
+          },
+          "silhouette": 0.005900205392335317,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.5587500000000001
         },
         "moments": {
           "logreg": {
@@ -5577,6 +8163,189 @@
           "best_classifier": "rf",
           "best_accuracy": 1.0
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 0.9887499999999999,
+            "accuracy_std": 0.02011684617428887,
+            "accuracy_std_repeats": 0.002499999999999991,
+            "f1_macro": 0.9887483884257888,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.95,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.98375,
+            "accuracy_std": 0.026545950726994123,
+            "accuracy_std_repeats": 0.005000000000000032,
+            "f1_macro": 0.9837467277467529,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.95,
+              0.95,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.925,
+              1.0,
+              1.0,
+              1.0,
+              0.925,
+              0.975,
+              1.0,
+              1.0,
+              0.95,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.07732547310284822,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.9887499999999999
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.12087538363037846,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.99375,
+            "accuracy_std": 0.010825317547305494,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9937497558498378,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2457401154054648,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 0.99,
@@ -5882,6 +8651,311 @@
           "best_classifier": "rf",
           "best_accuracy": 1.0
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.725,
+            "accuracy_std": 0.055339859052946645,
+            "accuracy_std_repeats": 0.011180339887498933,
+            "f1_macro": 0.7248336596889683,
+            "fold_accuracies": [
+              0.8,
+              0.675,
+              0.7,
+              0.75,
+              0.7,
+              0.775,
+              0.775,
+              0.625,
+              0.775,
+              0.75,
+              0.625,
+              0.675,
+              0.675,
+              0.75,
+              0.7,
+              0.8,
+              0.775,
+              0.7,
+              0.8,
+              0.675
+            ]
+          },
+          "rf": {
+            "accuracy": 0.71125,
+            "accuracy_std": 0.06493987603930268,
+            "accuracy_std_repeats": 0.021065374432940886,
+            "f1_macro": 0.7112125389393732,
+            "fold_accuracies": [
+              0.7,
+              0.675,
+              0.725,
+              0.75,
+              0.7,
+              0.75,
+              0.825,
+              0.675,
+              0.65,
+              0.825,
+              0.675,
+              0.675,
+              0.65,
+              0.825,
+              0.65,
+              0.775,
+              0.75,
+              0.575,
+              0.7,
+              0.675
+            ]
+          },
+          "silhouette": 0.024328289909975726,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.725
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.5586456200514196,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.34131460348643,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3247213292849304,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.99125,
+            "accuracy_std": 0.011924240017711833,
+            "accuracy_std_repeats": 0.003061862178478962,
+            "f1_macro": 0.9912498535099028,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              0.975,
+              0.975,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.975,
+              1.0,
+              0.975,
+              0.975,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3211390442887717,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -6138,6 +9212,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 0.9887499999999999,
+        "headroom": 0.011250000000000093,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.55375,
+            "margin": -0.43499999999999994,
+            "margin_ci95": [
+              -0.495,
+              -0.3875
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.5587500000000001,
+            "margin": -0.4299999999999998,
+            "margin_ci95": [
+              -0.4875,
+              -0.3875
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 0.9887499999999999,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.725,
+            "margin": -0.26374999999999993,
+            "margin_ci95": [
+              -0.3325,
+              -0.205
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.011250000000000093,
+            "margin_ci95": [
+              0.0,
+              0.03374999999999999
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "descriptor",
+        "best_margin": 0.011250000000000093,
+        "best_margin_ci95": [
+          0.0,
+          0.03374999999999999
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.5587500000000001,
+            "accuracy": 0.725,
+            "margin": 0.1662499999999999,
+            "margin_ci95": [
+              0.08121874999999998,
+              0.25125000000000003
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 0.9949999999999999,
+            "accuracy": 1.0,
+            "margin": 0.0050000000000001155,
+            "margin_ci95": [
+              0.0,
+              0.01499999999999999
+            ]
+          }
+        }
       }
     },
     "binary_kf16": {
@@ -6328,6 +9676,67 @@
           "silhouette": 0.4882584533116036,
           "best_classifier": "logreg",
           "best_accuracy": 1.0
+        },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.515,
+            "accuracy_std": 0.08154753215150046,
+            "accuracy_std_repeats": 0.0175,
+            "f1_macro": 0.5146199969615142,
+            "fold_accuracies": [
+              0.65,
+              0.575,
+              0.45,
+              0.45,
+              0.4,
+              0.5,
+              0.65,
+              0.525,
+              0.475,
+              0.5,
+              0.525,
+              0.575,
+              0.475,
+              0.5,
+              0.45,
+              0.5,
+              0.55,
+              0.325,
+              0.65,
+              0.575
+            ]
+          },
+          "rf": {
+            "accuracy": 0.51375,
+            "accuracy_std": 0.05504259714075999,
+            "accuracy_std_repeats": 0.018708286933869726,
+            "f1_macro": 0.5135506933681733,
+            "fold_accuracies": [
+              0.55,
+              0.6,
+              0.5,
+              0.55,
+              0.5,
+              0.425,
+              0.575,
+              0.5,
+              0.475,
+              0.475,
+              0.5,
+              0.6,
+              0.525,
+              0.475,
+              0.45,
+              0.55,
+              0.45,
+              0.425,
+              0.55,
+              0.6
+            ]
+          },
+          "silhouette": 0.00520939694213471,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.515
         },
         "moments": {
           "logreg": {
@@ -6545,7 +9954,7 @@
             "accuracy": 0.5,
             "accuracy_std": 0.0,
             "accuracy_std_repeats": 0.0,
-            "f1_macro": 0.49880576347542105,
+            "f1_macro": 0.4989155670094478,
             "fold_accuracies": [
               0.5,
               0.5,
@@ -7061,6 +10470,189 @@
           "best_classifier": "logreg",
           "best_accuracy": 1.0
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.10000796238479974,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.1438789764896288,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.2491807170288875,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 1.0,
@@ -7366,6 +10958,311 @@
           "best_classifier": "logreg",
           "best_accuracy": 1.0
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.75375,
+            "accuracy_std": 0.04491311055805422,
+            "accuracy_std_repeats": 0.015612494995996002,
+            "f1_macro": 0.7536985600352462,
+            "fold_accuracies": [
+              0.7,
+              0.8,
+              0.8,
+              0.75,
+              0.725,
+              0.8,
+              0.75,
+              0.775,
+              0.775,
+              0.725,
+              0.775,
+              0.8,
+              0.7,
+              0.725,
+              0.725,
+              0.85,
+              0.725,
+              0.675,
+              0.7,
+              0.8
+            ]
+          },
+          "rf": {
+            "accuracy": 0.72125,
+            "accuracy_std": 0.05435703726289724,
+            "accuracy_std_repeats": 0.014577379737113264,
+            "f1_macro": 0.7210126125568855,
+            "fold_accuracies": [
+              0.725,
+              0.7,
+              0.775,
+              0.775,
+              0.675,
+              0.675,
+              0.725,
+              0.825,
+              0.7,
+              0.675,
+              0.825,
+              0.7,
+              0.675,
+              0.675,
+              0.65,
+              0.8,
+              0.65,
+              0.775,
+              0.725,
+              0.7
+            ]
+          },
+          "silhouette": 0.11952962244748314,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.75375
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.6119199797599868,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.41093153458895576,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.4237320372885548,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.3193702567704031,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -7622,6 +11519,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 1.0,
+        "headroom": 0.0,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.5175,
+            "margin": -0.48250000000000004,
+            "margin_ci95": [
+              -0.5575,
+              -0.41125000000000006
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.515,
+            "margin": -0.485,
+            "margin_ci95": [
+              -0.55628125,
+              -0.42371875000000014
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.75375,
+            "margin": -0.24624999999999997,
+            "margin_ci95": [
+              -0.28375000000000006,
+              -0.2012187500000002
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "descriptor",
+        "best_margin": 0.0,
+        "best_margin_ci95": [
+          0.0,
+          0.0
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.515,
+            "accuracy": 0.75375,
+            "margin": 0.23875000000000002,
+            "margin_ci95": [
+              0.15621874999999996,
+              0.32375
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          }
+        }
       }
     },
     "binary_pooled_iaaft_amplitude": {
@@ -7812,6 +11983,67 @@
           "silhouette": 0.037034883198265575,
           "best_classifier": "rf",
           "best_accuracy": 0.9829166666666665
+        },
+        "laplacian_view": {
+          "logreg": {
+            "accuracy": 0.5758333333333333,
+            "accuracy_std": 0.05645179851479983,
+            "accuracy_std_repeats": 0.010992421631894109,
+            "f1_macro": 0.5755556627793251,
+            "fold_accuracies": [
+              0.5333333333333333,
+              0.625,
+              0.5833333333333334,
+              0.5833333333333334,
+              0.6166666666666667,
+              0.5583333333333333,
+              0.55,
+              0.6333333333333333,
+              0.5666666666666667,
+              0.625,
+              0.525,
+              0.6083333333333333,
+              0.5166666666666667,
+              0.5833333333333334,
+              0.6833333333333333,
+              0.49166666666666664,
+              0.625,
+              0.6416666666666667,
+              0.5083333333333333,
+              0.4583333333333333
+            ]
+          },
+          "rf": {
+            "accuracy": 0.54875,
+            "accuracy_std": 0.041102429638918206,
+            "accuracy_std_repeats": 0.011071108546322029,
+            "f1_macro": 0.5486656634039437,
+            "fold_accuracies": [
+              0.5666666666666667,
+              0.625,
+              0.5083333333333333,
+              0.55,
+              0.5416666666666666,
+              0.5416666666666666,
+              0.49166666666666664,
+              0.5916666666666667,
+              0.55,
+              0.6083333333333333,
+              0.5,
+              0.55,
+              0.525,
+              0.625,
+              0.5583333333333333,
+              0.5166666666666667,
+              0.5666666666666667,
+              0.5583333333333333,
+              0.5333333333333333,
+              0.4666666666666667
+            ]
+          },
+          "silhouette": 0.008372711836449876,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.5758333333333333
         },
         "moments": {
           "logreg": {
@@ -8545,6 +12777,189 @@
           "best_classifier": "rf",
           "best_accuracy": 0.9979166666666668
         },
+        "baselines_union+x1": {
+          "logreg": {
+            "accuracy": 0.9991666666666668,
+            "accuracy_std": 0.0036324157862839056,
+            "accuracy_std_repeats": 0.001666666666666661,
+            "f1_macro": 0.999166652198823,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9887500000000001,
+            "accuracy_std": 0.012713455251993633,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9887487574487903,
+            "fold_accuracies": [
+              0.9916666666666667,
+              0.975,
+              1.0,
+              0.9916666666666667,
+              0.9666666666666667,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              1.0,
+              0.9666666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9833333333333333,
+              0.9833333333333333,
+              0.9583333333333334,
+              1.0,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "silhouette": 0.07268626214246894,
+          "best_classifier": "logreg",
+          "best_accuracy": 0.9991666666666668
+        },
+        "baselines_union+x1x2": {
+          "logreg": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 0.9991666666666668,
+            "accuracy_std": 0.0024999999999999914,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9991666630497529,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.08857594702686852,
+          "best_classifier": "logreg",
+          "best_accuracy": 1.0
+        },
+        "baselines_union+x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9958333333333333,
+            "accuracy_std": 0.004930066485916344,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 0.9958333333333333,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              0.9916666666666667,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.09481255304515494,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topo_persistence_image": {
           "logreg": {
             "accuracy": 0.9887500000000001,
@@ -8850,6 +13265,311 @@
           "best_classifier": "rf",
           "best_accuracy": 0.99875
         },
+        "x1_graph": {
+          "logreg": {
+            "accuracy": 0.6700000000000002,
+            "accuracy_std": 0.03636237371545239,
+            "accuracy_std_repeats": 0.00937268489933501,
+            "f1_macro": 0.6697818334462644,
+            "fold_accuracies": [
+              0.7083333333333334,
+              0.6333333333333333,
+              0.6833333333333333,
+              0.6916666666666667,
+              0.6666666666666666,
+              0.7166666666666667,
+              0.5916666666666667,
+              0.6833333333333333,
+              0.6333333333333333,
+              0.725,
+              0.6833333333333333,
+              0.6666666666666666,
+              0.6666666666666666,
+              0.675,
+              0.675,
+              0.6833333333333333,
+              0.6916666666666667,
+              0.6833333333333333,
+              0.6666666666666666,
+              0.575
+            ]
+          },
+          "rf": {
+            "accuracy": 0.6904166666666667,
+            "accuracy_std": 0.0351855202225764,
+            "accuracy_std_repeats": 0.007046472718869876,
+            "f1_macro": 0.6901032184249779,
+            "fold_accuracies": [
+              0.7416666666666667,
+              0.65,
+              0.6666666666666666,
+              0.7166666666666667,
+              0.75,
+              0.6666666666666666,
+              0.6916666666666667,
+              0.6166666666666667,
+              0.675,
+              0.7,
+              0.725,
+              0.65,
+              0.7083333333333334,
+              0.6666666666666666,
+              0.6416666666666667,
+              0.7333333333333333,
+              0.7,
+              0.6833333333333333,
+              0.725,
+              0.7
+            ]
+          },
+          "silhouette": 0.009874910977168451,
+          "best_classifier": "rf",
+          "best_accuracy": 0.6904166666666667
+        },
+        "x2_ph": {
+          "logreg": {
+            "accuracy": 0.9995833333333334,
+            "accuracy_std": 0.0018162078931419406,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.9995833315248763,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.18297429216163905,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x1x2": {
+          "logreg": {
+            "accuracy": 0.99875,
+            "accuracy_std": 0.00297559517855951,
+            "accuracy_std_repeats": 0.001020620726159654,
+            "f1_macro": 0.9987499945746293,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.13335192166419235,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x3_fusion": {
+          "logreg": {
+            "accuracy": 0.9974999999999999,
+            "accuracy_std": 0.0046398036356916856,
+            "accuracy_std_repeats": 0.0008333333333333305,
+            "f1_macro": 0.9974999782983286,
+            "fold_accuracies": [
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9833333333333333,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.25046683443264084,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
+        "x1x2_rich": {
+          "logreg": {
+            "accuracy": 0.9974999999999999,
+            "accuracy_std": 0.003818813079129853,
+            "accuracy_std_repeats": 0.0015590239111558035,
+            "f1_macro": 0.9974999963830863,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              0.9916666666666667,
+              0.9916666666666667,
+              1.0
+            ]
+          },
+          "rf": {
+            "accuracy": 1.0,
+            "accuracy_std": 0.0,
+            "accuracy_std_repeats": 0.0,
+            "f1_macro": 1.0,
+            "fold_accuracies": [
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "silhouette": 0.10213103592337293,
+          "best_classifier": "rf",
+          "best_accuracy": 1.0
+        },
         "topological_view_fullres": {
           "logreg": {
             "accuracy": 1.0,
@@ -9106,6 +13826,280 @@
           "any_go": false,
           "verdict": "NO-GO"
         }
+      },
+      "union_verdicts": {
+        "baselines_union_accuracy": 0.9991666666666668,
+        "headroom": 0.0008333333333332416,
+        "go_margin": 0.05,
+        "go_arithmetically_possible": false,
+        "configs": {
+          "descriptor": {
+            "accuracy": 0.9891666666666665,
+            "margin": -0.010000000000000231,
+            "margin_ci95": [
+              -0.01708333333333334,
+              -0.004166666666666652
+            ],
+            "reaches_go_margin": false
+          },
+          "spectral_view": {
+            "accuracy": 0.5804166666666667,
+            "margin": -0.41875000000000007,
+            "margin_ci95": [
+              -0.4570937500000001,
+              -0.3770729166666667
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view": {
+            "accuracy": 0.9829166666666665,
+            "margin": -0.01625000000000021,
+            "margin_ci95": [
+              -0.026666666666666682,
+              -0.006666666666666643
+            ],
+            "reaches_go_margin": false
+          },
+          "laplacian_view": {
+            "accuracy": 0.5758333333333333,
+            "margin": -0.42333333333333345,
+            "margin_ci95": [
+              -0.46333333333333326,
+              -0.38082291666666673
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo": {
+            "accuracy": 0.9991666666666668,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+topo_rich": {
+            "accuracy": 0.9979166666666668,
+            "margin": -0.0012499999999999734,
+            "margin_ci95": [
+              -0.004166666666666652,
+              0.0008333333333333304
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1": {
+            "accuracy": 0.9991666666666668,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "baselines_union+x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_persistence_image": {
+            "accuracy": 0.9920833333333334,
+            "margin": -0.00708333333333333,
+            "margin_ci95": [
+              -0.016250000000000007,
+              -0.0004166666666666652
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_betti_curves": {
+            "accuracy": 0.9866666666666666,
+            "margin": -0.012500000000000178,
+            "margin_ci95": [
+              -0.02626041666666666,
+              -0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_multiscale": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topo_rich_all": {
+            "accuracy": 0.9974999999999999,
+            "margin": -0.0016666666666668162,
+            "margin_ci95": [
+              -0.005416666666666648,
+              0.0008333333333333304
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_rich": {
+            "accuracy": 0.99875,
+            "margin": -0.0004166666666667318,
+            "margin_ci95": [
+              -0.0033437499999999874,
+              0.0016666666666666607
+            ],
+            "reaches_go_margin": false
+          },
+          "x1_graph": {
+            "accuracy": 0.6904166666666667,
+            "margin": -0.3087500000000001,
+            "margin_ci95": [
+              -0.33999999999999997,
+              -0.2758333333333334
+            ],
+            "reaches_go_margin": false
+          },
+          "x2_ph": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x3_fusion": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "x1x2_rich": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "topological_view_fullres": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          },
+          "descriptor_fullres_topo": {
+            "accuracy": 1.0,
+            "margin": 0.0008333333333332416,
+            "margin_ci95": [
+              0.0,
+              0.002083333333333326
+            ],
+            "reaches_go_margin": false
+          }
+        },
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.0008333333333332416,
+        "best_margin_ci95": [
+          0.0,
+          0.002083333333333326
+        ],
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": [],
+        "verdict": "NO-GO",
+        "head_to_head": {
+          "x1_graph_vs_laplacian_view": {
+            "a": "x1_graph",
+            "b": "laplacian_view",
+            "accuracy_b": 0.5758333333333333,
+            "accuracy": 0.6904166666666667,
+            "margin": 0.11458333333333337,
+            "margin_ci95": [
+              0.06123958333333332,
+              0.1683541666666666
+            ]
+          },
+          "x1x2_vs_descriptor": {
+            "a": "x1x2",
+            "b": "descriptor",
+            "accuracy_b": 0.9891666666666665,
+            "accuracy": 1.0,
+            "margin": 0.010833333333333472,
+            "margin_ci95": [
+              0.004583333333333317,
+              0.01791666666666667
+            ]
+          },
+          "x2_ph_vs_topological_view": {
+            "a": "x2_ph",
+            "b": "topological_view",
+            "accuracy_b": 0.9829166666666665,
+            "accuracy": 1.0,
+            "margin": 0.01708333333333345,
+            "margin_ci95": [
+              0.007083333333333308,
+              0.028750000000000008
+            ]
+          },
+          "x2_ph_vs_topological_view_fullres": {
+            "a": "x2_ph",
+            "b": "topological_view_fullres",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_x1x2": {
+            "a": "x1x2_rich",
+            "b": "x1x2",
+            "accuracy_b": 1.0,
+            "accuracy": 1.0,
+            "margin": 0.0,
+            "margin_ci95": [
+              0.0,
+              0.0
+            ]
+          },
+          "x1x2_rich_vs_physical_structure_all": {
+            "a": "x1x2_rich",
+            "b": "physical_structure_all",
+            "accuracy_b": 0.9974999999999999,
+            "accuracy": 1.0,
+            "margin": 0.0025000000000000577,
+            "margin_ci95": [
+              0.0,
+              0.007083333333333308
+            ]
+          }
+        }
       }
     }
   },
@@ -9290,10 +14284,97 @@
   "verdict_rich_topology": "NO-GO",
   "rich_topology_go_tasks": [],
   "verdict_overall_rule": "overall = strict verdict: the specified baselines are blind by construction on this benchmark, so only the strict comparison tests superiority over strong baselines",
+  "verdict_vs_union_any_config": "NO-GO",
+  "vs_union_summary": {
+    "verdict": "NO-GO",
+    "best_task": "binary_kf8",
+    "best_config": "descriptor",
+    "best_margin": 0.011250000000000093,
+    "per_task": {
+      "binary_pooled": {
+        "verdict": "NO-GO",
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.0008333333333332416,
+        "best_margin_ci95": [
+          0.0,
+          0.002083333333333326
+        ],
+        "headroom": 0.0008333333333332416,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      },
+      "multiclass6": {
+        "verdict": "NO-GO",
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.002083333333333215,
+        "best_margin_ci95": [
+          0.0,
+          0.005833333333333313
+        ],
+        "headroom": 0.002083333333333215,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      },
+      "binary_kf4": {
+        "verdict": "NO-GO",
+        "best_config": "descriptor",
+        "best_margin": 0.006249999999999978,
+        "best_margin_ci95": [
+          0.0,
+          0.018750000000000044
+        ],
+        "headroom": 0.006249999999999978,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      },
+      "binary_kf8": {
+        "verdict": "NO-GO",
+        "best_config": "descriptor",
+        "best_margin": 0.011250000000000093,
+        "best_margin_ci95": [
+          0.0,
+          0.03374999999999999
+        ],
+        "headroom": 0.011250000000000093,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      },
+      "binary_kf16": {
+        "verdict": "NO-GO",
+        "best_config": "descriptor",
+        "best_margin": 0.0,
+        "best_margin_ci95": [
+          0.0,
+          0.0
+        ],
+        "headroom": 0.0,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      },
+      "binary_pooled_iaaft_amplitude": {
+        "verdict": "NO-GO",
+        "best_config": "baselines_union+x1x2",
+        "best_margin": 0.0008333333333332416,
+        "best_margin_ci95": [
+          0.0,
+          0.002083333333333326
+        ],
+        "headroom": 0.0008333333333332416,
+        "go_arithmetically_possible": false,
+        "configs_reaching_go_margin": [],
+        "configs_reaching_go_margin_ci_above_0": []
+      }
+    }
+  },
   "timing_seconds": {
-    "simulation": 847.1183688640594,
-    "surrogates": 405.3,
-    "features": 272.9,
-    "total_this_run": 1976.3
+    "simulation": 1661.0356330871582,
+    "surrogates": 68.2,
+    "features": 131.0,
+    "total_this_run": 3254.0
   }
 }

@@ -61,6 +61,12 @@ baselines (Okubo–Weiss, gradient statistics, increment flatness).
   over all baselines combined; the multi-scale filtration makes topology robust
   to 0 dB noise (0.60 → 1.00), an edge that disappears when the baselines get
   the same low-pass. Still **NO-GO**.
+- Second follow-up: the authentic functional-graph view X1 (|Pearson| > 0.40
+  between 8×8 mesh regions, ported verbatim in `src/descriptor/authentic.py`)
+  scores 0.69–0.75. That beats the old graph-Laplacian view but is far below
+  the physical baselines. The full authentic descriptor X1+X2 and
+  X1+X2+richer tie `baselines_union` (best margin over any configuration and
+  task +0.011; headroom ≤ 0.011). Still **NO-GO**.
 
 Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
 figures in `results/figures/`.
