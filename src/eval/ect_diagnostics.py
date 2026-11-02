@@ -98,7 +98,7 @@ def dect_curves(name, masks, F_ect, y, g, ev, hp):
         curve["epoch"].append(ep + 1)
         curve["train_acc"].append(float((_predict(model, masks, tr) == y[tr]).mean()))
         curve["test_acc"].append(float((_predict(model, masks, te) == y[te]).mean()))
-        curve["sharpness"].append(float(model.dect.log_lam.exp()))
+        curve["sharpness"].append(float(model.dect.log_lam.detach().exp()))
     n = int(round((np.sqrt(masks.shape[2]) - 1) / 2))
     t0 = time.time()
     _fit_predict(masks, y, tr, te, n, len(np.unique(y)), hp, seed=1000 * ev["seed"], on_epoch=rec)
