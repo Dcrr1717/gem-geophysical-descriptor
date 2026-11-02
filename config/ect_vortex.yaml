@@ -1,0 +1,43 @@
+# ECT / DECT study (docs/ECT_RESULTS.md). Task A reuses the hard benchmark's
+# cached 256^2 IAAFT fields via `base_config`; task B is the vortex-event task.
+base_config: config/hard_benchmark.yaml
+out_dir: results
+n_workers: 4
+
+ect_study:
+  n_repeats: 3                  # repeated StratifiedGroupKFold (4 folds), as noise_robustness
+  dect:
+    enabled: true               # needs torch; skipped with a warning if torch is missing
+    epochs: 30
+    batch_size: 32
+    lr: 0.003
+    weight_decay: 0.0001
+    n_dirs: 16                  # learnable directions (initialized uniform on the circle)
+    n_t: 16                     # learnable thresholds (initialized uniform on [-1.42, 1.42])
+    sharpness: 40.0             # initial sigmoid slope (learnable, log-parameterized)
+  rule:
+    min_margin: 0.05            # GO: margin >= +0.05 over baselines_union, 95% CI > 0, BH q < 0.05
+
+vortex_events:
+  cache_dir: data/vortex_events
+  grid: 256
+  dt: 0.005
+  nu: 0.0002
+  drag: 0.0
+  radius: 0.3                   # Gaussian core radius a (box 2*pi)
+  amplitude: 10.0               # peak vorticity of each core
+  background_rms: 0.05          # x amplitude
+  background_band: [4, 24]
+  merge_range: [2.0, 2.6]       # d / a, class 0: one core from t ~ 7 on (pilot v2)
+  separate_range: [5.5, 6.5]    # d / a, class 1: two cores up to t = 29 (pilot v2)
+  runs_per_class: 24
+  first_snapshot_time: 10.0     # window t = 10, 12, ..., 28 (pilot v2)
+  snapshot_interval: 2.0
+  snapshots_per_run: 10
+
+# Pilot v1 (nu = 5e-4, background 0.1): every pair merged by t ~ 22, even d/a = 5.4
+# (results/vortex_pilot_v1.json); v2 below fixed nu = 2e-4, background 0.05.
+vortex_pilot:
+  ratios: [2.0, 2.3, 2.6, 3.0, 4.0, 5.0, 5.5, 6.0, 6.5, 7.0]
+  repeats: 2
+  duration: 30

@@ -78,6 +78,19 @@ baselines (Okubo–Weiss, gradient statistics, increment flatness).
     pyramid (−0.006): it is smoothing, not topology.
   - Masking, gaps and quantization leave no headroom (`baselines_union`
     ≥ 0.995), and resolution loss hurts topology more (−0.139 at ×16).
+- Fourth follow-up, pre-registered: richer topology and a genuinely
+  topological task ([`docs/ECT_RESULTS.md`](docs/ECT_RESULTS.md)).
+  - Two new views: the Euler Characteristic Transform (ECT,
+    `src/descriptor/ect.py`) and a differentiable ECT (DECT,
+    `src/descriptor/dect.py`, optional torch).
+  - A new task: merged vs separate co-rotating vortex pairs
+    (`src/sims/vortex_events.py`).
+  - **NO-GO on both tasks.** On the IAAFT task, ECT scores 0.967 and DECT
+    0.888, against 1.000 for the baselines.
+  - On the vortex-merger task, H0/H1 counts are perfect (1.000) but tie
+    `baselines_union` and the power spectrum alone (1.000). A merger also
+    doubles the core size, which the spectrum sees.
+  - Topology does **not** reach the +0.05 margin.
 
 Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
 figures in `results/figures/`.
@@ -87,6 +100,7 @@ python -m pip install -r requirements.txt gudhi
 python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml        # ~1 h, 4 cores
 python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml        # exploratory
 python -m src.eval.robustness_sweep --config config/noise_robustness.yaml  # degradations, ~2 h
+python -m src.eval.ect_benchmark  --config config/ect_vortex.yaml       # ECT/DECT + vortex merger, ~2.5 h (torch optional)
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min check
 ```
 

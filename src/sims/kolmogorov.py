@@ -50,7 +50,7 @@ def _rfft_wavenumbers(n: int):
 def simulate(n: int = 64, nu: float = 0.02, forcing_wavenumber: int = 4,
              forcing_amp: float = 0.6, dt: float = 2e-3, n_steps: int = 2500,
              spinup: int = 1200, n_snapshots: int = 10, seed: int = 0,
-             drag: float = 0.0, scheme: str = "euler"):
+             drag: float = 0.0, scheme: str = "euler", w0=None):
     """Run the solver and return a list of vorticity fields (physical space).
 
     Parameters mirror the experiment config. Regimes are obtained by changing
@@ -65,14 +65,21 @@ def simulate(n: int = 64, nu: float = 0.02, forcing_wavenumber: int = 4,
     `scheme` selects the time integrator ("euler" = original, "rk4" = stable
     integrating-factor RK4, see module docstring). Snapshots are taken every
     `(n_steps - spinup) // n_snapshots` steps starting at step `spinup`.
+
+    `w0` (optional, rk4 only) is an initial vorticity field of shape (n, n)
+    that replaces the random initial condition, e.g. seeded vortices for the
+    vortex-event task (src/sims/vortex_events.py); with `forcing_amp=0` the
+    run is freely decaying. The default None keeps the original behaviour.
     """
     if scheme == "rk4":
         return _simulate_ifrk4(n=n, nu=nu, forcing_wavenumber=forcing_wavenumber,
                                forcing_amp=forcing_amp, dt=dt, n_steps=n_steps,
                                spinup=spinup, n_snapshots=n_snapshots, seed=seed,
-                               drag=drag)
+                               drag=drag, w0=w0)
     if scheme != "euler":
         raise ValueError(f"unknown scheme '{scheme}' (use 'euler' or 'rk4')")
+    if w0 is not None:
+        raise ValueError("an initial condition w0 is only supported with scheme='rk4'")
 
     rng = np.random.default_rng(seed)
     kx, ky, k2, k2n = _wavenumbers(n)
@@ -109,7 +116,7 @@ def simulate(n: int = 64, nu: float = 0.02, forcing_wavenumber: int = 4,
 
 
 def _simulate_ifrk4(n, nu, forcing_wavenumber, forcing_amp, dt, n_steps, spinup,
-                    n_snapshots, seed, drag):
+                    n_snapshots, seed, drag, w0=None):
     """Integrating-factor (Lawson) RK4 on the rfft2 half spectrum.
 
     Same equations, forcing, initial condition (identical random draw) and
@@ -124,6 +131,8 @@ def _simulate_ifrk4(n, nu, forcing_wavenumber, forcing_amp, dt, n_steps, spinup,
 
     wh = np.fft.rfft2(rng.standard_normal(shape)) * mask
     wh *= np.exp(-k2 / (2.0 * forcing_wavenumber ** 2))
+    if w0 is not None:
+        wh = np.fft.rfft2(np.asarray(w0, dtype=float)) * mask
 
     ikx, iky = 1j * kx, 1j * ky
 

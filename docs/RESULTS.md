@@ -348,6 +348,29 @@ baselines on the same Gaussian pyramid.
   ≥ 0.995).
 - Resolution loss hurts topology more than the baselines (−0.139 at ×16).
 
+## Richer topology and a topological task (fourth follow-up, pre-registered)
+
+Details: [`docs/ECT_RESULTS.md`](ECT_RESULTS.md). This follow-up acts on both
+diagnosed causes of the NO-GO.
+
+- **Representation.** Two new views were added and re-tested on this
+  benchmark: an injective Euler Characteristic Transform (ECT) and a
+  differentiable ECT with learned directions and thresholds (DECT).
+- **Task.** A new task has a label set by global connectivity: merged (one
+  core) vs separate (two cores) co-rotating vortex pairs, evolved with the
+  repo's solver.
+
+**NO-GO on both.**
+
+- **IAAFT benchmark.** ECT scores 0.967 (margin −0.033 [−0.047, −0.022]) and
+  DECT 0.888, both below the older summaries and the baselines (1.000).
+- **Vortex merger.** H0/H1 counts are perfect (1.000) but tie
+  `baselines_union` (1.000, margin +0.000). The power spectrum alone also
+  scores 1.000, because merging conserves circulation and roughly area, so it
+  also changes the core scale.
+- **Margin.** No ≥ +0.05 margin is possible on either task: the headroom is
+  0.000.
+
 ## Methodological findings (useful regardless of the verdict)
 
 - **Round-off amplitude leak in standardization.** `(w − m) / (std + ε)` has
@@ -431,6 +454,7 @@ baselines on the same Gaussian pyramid.
 pip install -r requirements.txt gudhi
 python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml   # ~1 h on 4 cores (+~30 min simulation without the cache)
 python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml   # ~20 min (uses the cache)
+python -m src.eval.ect_benchmark --config config/ect_vortex.yaml       # ECT/DECT + vortex merger, ~2.5 h
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min pipeline check
 ```
 
