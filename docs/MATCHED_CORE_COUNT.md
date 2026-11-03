@@ -101,11 +101,54 @@ descriptor view and no benchmark classifier is involved.
   pool.
 - All pilot decisions used design statistics and core counts only.
 
-@@DESIGN@@
+**Design phase on the final pool** (seed 0; `results/matched_core_count_design.json`,
+`results/figures/core_count_matching.png`). It was run once with the settings
+above and passed the gate on the first attempt. Nothing was iterated on the
+final pool.
+
+- **Pool:** 240 trajectories, 1 920 snapshots (840 s on 4 cores).
+- **Validity:** 93.3% of one-core snapshots and 97.3% of two-core snapshots
+  have the designed core count. The rest are dropped.
+  - Dropped one-core snapshots: counts of 2 (45), 3 (13), 4 (4), 5 and 8
+    (1 each). Elongated cores pinch off or shed fragments above half the peak.
+  - Dropped two-core snapshots: counts of 1 (6) and 3 to 5 (20).
+- **Balance:**
+
+  | design statistic | SMD before | SMD after | variance ratio before | variance ratio after |
+  |---|---|---|---|---|
+  | spectral centroid | +0.15 | −0.002 | 0.72 | 1.04 |
+  | spectral width | −0.49 | +0.027 | 0.65 | 0.99 |
+  | occupied area (log) | −0.24 | +0.026 | 0.59 | 1.08 |
+  | standardized peak (log) | +0.36 | −0.008 | 0.54 | 1.06 |
+  | grouped-CV AUC of LogReg on the four statistics | 0.83 | **0.46** | | |
+
+- **Matched set:** 436 pairs, so 872 fields.
+  - 200 trajectories: 107 one-core and 93 two-core.
+  - All 8 snapshot times are represented (86–142 fields each).
+  - Set hash `dcb2434ec859aba3`.
+- **The matched set is typical of the pool.** Median generation parameters
+  barely move:
+  - one-core aspect ratio 2.71 → 2.61, steepness 5.29 → 5.23;
+  - two-core size ratio 0.56 → 0.54, amplitude ratio 0.76 → 0.75.
 
 ## DECT head (developed on task B only)
 
-@@DECT@@
+On task B, the original DECT under-fitted. Its head ends in global average
+pooling ("gap"), which discards where along the threshold axis the Euler
+characteristic changes (`docs/ECT_RESULTS.md`, diagnostics).
+
+- **Candidate.** `src/descriptor/dect.py` gains a "flat" head: the same two
+  convolutions, then flatten and a linear layer. "gap" stays the default, so
+  tasks A and B are reproducible.
+- **Development.** `src/eval/dect_dev.py` trains both heads on two task-B
+  splits (repeat 0, folds 0 and 1), with the unchanged training budget:
+  30 epochs, batch 32, Adam lr 3·10⁻³, weight decay 10⁻⁴.
+- **Selection rule, written before the development run finished:** use "flat"
+  for task C if its mean final test accuracy on the two task-B splits is
+  higher than that of "gap"; otherwise keep "gap".
+- No task-C data is used for this choice.
+
+@@DECT_RESULT@@
 
 ## Views
 

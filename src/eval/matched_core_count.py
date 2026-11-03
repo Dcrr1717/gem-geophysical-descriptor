@@ -118,8 +118,8 @@ def design(cfg, workers):
     res = {"phase": "design (outcome-blind: no descriptor view, no benchmark classifier)",
            "pool_snapshots": int(len(y)), "pool_trajectories": int(len(np.unique(g))),
            "valid_fraction_by_class": [float(valid[y == c].mean()) for c in (0, 1)],
-           "invalid_core_counts": {str(c): np.unique(cnt[(y == c) & ~valid],
-                                                       return_counts=True)[1].tolist()
+           "invalid_core_counts": {str(c): {str(int(k)): int(n) for k, n in zip(
+                                       *np.unique(cnt[(y == c) & ~valid], return_counts=True))}
                                    for c in (0, 1)},
            "balance_before": balance(S[iv], y[iv]),
            "design_auc_before": design_auc(S[iv], y[iv], g[iv]),
