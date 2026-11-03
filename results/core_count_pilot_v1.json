@@ -1,0 +1,112 @@
+{
+  "params": {
+    "cache_dir": "data/core_count",
+    "grid": 256,
+    "dt": 0.005,
+    "nu": 0.0002,
+    "amplitude": 10.0,
+    "background_rms": 0.05,
+    "background_band": [
+      4,
+      24
+    ],
+    "steepness": [
+      2.0,
+      8.0
+    ],
+    "single_radius": [
+      0.25,
+      0.7
+    ],
+    "pair_radius": [
+      0.2,
+      0.5
+    ],
+    "pair_amp_ratio": [
+      0.7,
+      1.0
+    ],
+    "pair_separation": [
+      4.0,
+      7.0
+    ],
+    "max_separation": 3.0,
+    "runs_per_class": 24,
+    "first_snapshot_time": 2.0,
+    "snapshot_interval": 2.0,
+    "snapshots_per_run": 4
+  },
+  "caliper": 0.25,
+  "n_snapshots": 192,
+  "valid_fraction_by_class": [
+    1.0,
+    1.0
+  ],
+  "design_stats_5_50_95_by_class": {
+    "0": {
+      "spectral_centroid": [
+        2.9562278462147047,
+        5.988496705033789,
+        8.982212613478946
+      ],
+      "spectral_width": [
+        3.237463750800347,
+        6.013213179357198,
+        7.380002950447293
+      ],
+      "occupied_area": [
+        0.004360198974609375,
+        0.008880615234375,
+        0.029087066650390625
+      ],
+      "standardized_peak": [
+        6.582717030005459,
+        11.390628218462908,
+        14.801318517414941
+      ]
+    },
+    "1": {
+      "spectral_centroid": [
+        4.179972480473735,
+        5.643232978205716,
+        7.677265088312296
+      ],
+      "spectral_width": [
+        3.965025409730177,
+        5.561650284387174,
+        6.929304006240909
+      ],
+      "occupied_area": [
+        0.008533477783203125,
+        0.01564788818359375,
+        0.023807525634765625
+      ],
+      "standardized_peak": [
+        7.529914217955621,
+        9.031737360187684,
+        11.900166450587097
+      ]
+    }
+  },
+  "balance_before": {
+    "spectral_centroid": {
+      "smd": -0.09038330488836606,
+      "variance_ratio": 0.3080376348279939
+    },
+    "spectral_width": {
+      "smd": -0.2786479354474579,
+      "variance_ratio": 0.5700842660354203
+    },
+    "occupied_area": {
+      "smd": 0.6875168373084749,
+      "variance_ratio": 0.25202895872192665
+    },
+    "standardized_peak": {
+      "smd": -0.5581274527268372,
+      "variance_ratio": 0.26660280112233853
+    }
+  },
+  "n_pairs_matched": 0,
+  "balance_after": null,
+  "seconds": 349.2
+}

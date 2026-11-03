@@ -1,0 +1,66 @@
+# Matched-scale core-count study (Task C, docs/MATCHED_CORE_COUNT.md).
+# One coherent vortex core vs two, with scale, occupancy and peak height
+# matched across classes on descriptor-free design statistics.
+base_config: config/hard_benchmark.yaml
+out_dir: results
+n_workers: 4
+
+ect_study:
+  n_repeats: 3                  # repeated StratifiedGroupKFold (4 folds), as the ECT study
+  dect:
+    enabled: true               # needs torch; skipped with a warning if torch is missing
+    epochs: 30                  # training budget of the ECT study, unchanged
+    batch_size: 32
+    lr: 0.003
+    weight_decay: 0.0001
+    n_dirs: 16
+    n_t: 16
+    sharpness: 40.0
+    head: HEAD_TBD              # fixed from the task-B development run (src/eval/dect_dev.py)
+    threads: 4
+  rule:
+    min_margin: 0.05            # GO: margin >= +0.05 over baselines_union, 95% CI > 0, BH q < 0.05
+
+core_count:
+  cache_dir: data/core_count
+  grid: 256
+  dt: 0.005
+  nu: 0.0002
+  amplitude: 10.0               # peak vorticity of the (stronger) core
+  background_rms: 0.05          # x amplitude, as task B
+  background_band: [4, 24]
+  steepness: [2.0, 8.0]         # profile exp(-rho^p): p = 2 Gaussian, large p flat-topped (default)
+  # class 0: one elliptical core (area-preserving ellipse, random orientation)
+  single_radius: [0.30, 0.75]   # equivalent radius R
+  single_aspect: [1.5, 3.5]     # aspect ratio
+  single_steepness: [3.0, 8.0]
+  # class 1: two round cores
+  pair_radius: [0.30, 0.60]     # radius of the larger core
+  pair_size_ratio: [0.35, 0.80] # smaller / larger radius
+  pair_amp_ratio: [0.6, 1.0]    # weaker / stronger core peak (which core is weaker: random)
+  pair_steepness: [2.0, 5.0]
+  pair_separation: [4.0, 7.0]   # centre distance / mean radius
+  max_separation: 3.0           # cap (box 2*pi)
+  runs_per_class: 120
+  first_snapshot_time: 1.0
+  snapshot_interval: 0.5
+  snapshots_per_run: 8          # t = 1.0, 1.5, ..., 4.5
+
+core_count_pilot:               # descriptor-free pilot (seed + 99), overrides the above
+  runs_per_class: 24
+  first_snapshot_time: 1.0
+  snapshot_interval: 1.0
+  snapshots_per_run: 4          # t = 1, 2, 3, 4
+
+# Pilots v1, v2 used Mahalanobis matching (caliper 0.25) and other ranges: no
+# usable overlap (results/core_count_pilot_v1.json, _v2.json).
+matching:
+  method: propensity            # logistic propensity on the 4 design statistics
+  degree: 2                     # linear + quadratic + pairwise terms (balances variances too)
+  caliper_sd: 0.2               # caliper = 0.2 SD of the propensity logit (Austin 2011)
+  caliper: 0.25                 # (Mahalanobis, pilots v1 / v2 only)
+  gate:                         # balance gate on the matched set (pre-registered)
+    max_abs_smd: 0.1
+    variance_ratio: [0.5, 2.0]
+    min_pairs: 120
+    max_design_auc: 0.60        # grouped-CV AUC of LogReg on the design statistics

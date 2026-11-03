@@ -17,6 +17,13 @@ results/*
 !results/noise_robustness.md
 !results/noise_robustness.json
 !results/figures/
+!results/matched_core_count.md
+!results/matched_core_count.json
+!results/matched_core_count_design.json
+!results/core_count_pilot_v1.json
+!results/core_count_pilot_v2.json
+!results/core_count_pilot_v3.json
+!results/dect_head_dev.json
 !results/ect_vortex.md
 !results/ect_vortex.json
 !results/ect_vortex_diagnostics.json

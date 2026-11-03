@@ -32,7 +32,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ..descriptor.ect import ect_features, level_masks
+from ..descriptor.ect import ect_features, level_masks, roll_quiet_to_edge
 from .classify import evaluate_grouped
 from .ect_benchmark import generate_vortex_events, load_config
 
@@ -42,12 +42,6 @@ CORE_LEVEL = 1.5            # = the top ECT level (field-std units)
 def touches_edge(w, level=CORE_LEVEL):
     m = w > level
     return bool(m[0].any() or m[-1].any() or m[:, 0].any() or m[:, -1].any())
-
-
-def roll_quiet_to_edge(w):
-    """Periodic roll that moves the row / column with the smallest max |w| to index 0."""
-    a = np.abs(w)
-    return np.roll(np.roll(w, -int(a.max(1).argmin()), axis=0), -int(a.max(0).argmin()), axis=1)
 
 
 def _ect_pair(w):
