@@ -65,25 +65,42 @@ if HAS_TORCH:
             return out.reshape(B, L, len(self.theta), len(self.t))
 
     class DECTClassifier(nn.Module):
-        """DECT layer + small CNN head on the (levels, directions, thresholds) image."""
+        """DECT layer + small CNN head on the (levels, directions, thresholds) image.
 
-        def __init__(self, n, n_levels, n_classes, n_dirs=16, n_t=16, sharpness=40.0):
+        head = "gap": global average pooling before the linear layer (the
+        original head, used for tasks A and B). It discards the absolute
+        threshold position, where the Euler characteristic changes.
+        head = "flat": the convolutional features are flattened, so the linear
+        layer sees where along the threshold axis each pattern occurs."""
+
+        def __init__(self, n, n_levels, n_classes, n_dirs=16, n_t=16, sharpness=40.0,
+                     head="gap"):
             super().__init__()
             self.dect = DECTLayer(n, n_dirs, n_t, sharpness)
             self.norm = nn.BatchNorm2d(n_levels)
             self.conv1 = nn.Conv2d(n_levels, 16, 3, padding=1)
             self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
-            self.head = nn.Linear(32, n_classes)
+            self.head_kind = head
+            if head == "gap":
+                n_feat = 32
+            else:                       # size of the flattened conv features
+                with torch.no_grad():
+                    n_feat = self._features(torch.zeros(1, n_levels, n_dirs, n_t)).numel()
+            self.head = nn.Linear(n_feat, n_classes)
 
-        def forward(self, masks):
-            x = self.norm(self.dect(masks))
+        def _features(self, x):
             # directions are circular: wrap-pad that axis, zero-pad the threshold axis
             x = F.pad(x, (0, 0, 1, 1), mode="circular")
             x = F.relu(self.conv1(F.pad(x, (1, 1, 0, 0))))
             x = F.max_pool2d(x, 2)
             x = F.pad(x, (0, 0, 1, 1), mode="circular")
-            x = F.relu(self.conv2(F.pad(x, (1, 1, 0, 0))))
-            return self.head(x.mean(dim=(2, 3)))
+            return F.relu(self.conv2(F.pad(x, (1, 1, 0, 0))))
+
+        def forward(self, masks):
+            x = self._features(self.norm(self.dect(masks)))
+            if self.head_kind == "gap":
+                return self.head(x.mean(dim=(2, 3)))
+            return self.head(x.flatten(1))
 
 
 def _predict(model, masks, idx, chunk=64):
@@ -101,7 +118,7 @@ def _fit_predict(masks, y, tr, te, n, n_classes, hp, seed, on_epoch=None):
     torch.manual_seed(seed)
     np.random.seed(seed)
     model = DECTClassifier(n, masks.shape[1], n_classes, hp["n_dirs"], hp["n_t"],
-                           hp["sharpness"])
+                           hp["sharpness"], hp.get("head", "gap"))
     opt = torch.optim.Adam(model.parameters(), lr=hp["lr"], weight_decay=hp["weight_decay"])
     Xtr = torch.from_numpy(masks[tr])
     ytr = torch.from_numpy(np.asarray(y)[tr]).long()
@@ -138,7 +155,8 @@ def train_eval_grouped(masks, y, groups, n, hp, seed=0, n_splits=4, n_repeats=5,
         raise RuntimeError("DECT needs torch (pip install torch); disable it with dect.enabled: false")
     from sklearn.metrics import accuracy_score, f1_score
     from sklearn.model_selection import StratifiedGroupKFold
-    torch.set_num_threads(max(1, torch.get_num_threads()))
+    if hp.get("threads"):
+        torch.set_num_threads(int(hp["threads"]))
     y = np.asarray(y)
     groups = np.asarray(groups)
     n_classes = len(np.unique(y))

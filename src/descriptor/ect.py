@@ -150,3 +150,12 @@ def euler_characteristic(pixels):
     n = np.asarray(pixels).shape[0]
     _, sign = grid_cells(n)
     return int(round(float((m * sign).sum())))
+
+
+def roll_quiet_to_edge(w):
+    """Periodic roll that moves the row / column with the smallest max |w| to
+    index 0, so that structures of a periodic field are not cut by the edges
+    of the planar square on which the ECT is computed (boundary-aware ECT)."""
+    a = np.abs(w)
+    return np.roll(np.roll(w, -int(a.max(1).argmin()), axis=0), -int(a.max(0).argmin()), axis=1)
+

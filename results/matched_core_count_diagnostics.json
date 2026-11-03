@@ -1,0 +1,105 @@
+{
+  "note": "exploratory, post hoc; not part of the pre-registered verdict",
+  "matched_set": "dcb2434ec859aba3",
+  "ablation": {
+    "baselines_union": {
+      "accuracy": 0.9770642201834862,
+      "classifier": "logreg"
+    },
+    "without_one_point": {
+      "accuracy": 0.9797400611620795,
+      "classifier": "logreg"
+    },
+    "only_one_point": {
+      "accuracy": 0.8994648318042814,
+      "classifier": "rf"
+    },
+    "without_spectrum": {
+      "accuracy": 0.9640672782874619,
+      "classifier": "logreg"
+    },
+    "only_spectrum": {
+      "accuracy": 0.8952599388379205,
+      "classifier": "rf"
+    },
+    "without_structure": {
+      "accuracy": 0.9602446483180428,
+      "classifier": "logreg"
+    },
+    "only_structure": {
+      "accuracy": 0.966743119266055,
+      "classifier": "logreg"
+    }
+  },
+  "by_time": {
+    "baselines_union": {
+      "classifier": "logreg",
+      "accuracy_by_snapshot": [
+        0.9644808743169399,
+        0.9824561403508771,
+        0.989247311827957,
+        0.9767441860465116,
+        0.9609929078014184,
+        0.9807692307692307,
+        0.9715099715099714,
+        0.9882629107981221
+      ],
+      "n_by_snapshot": [
+        122,
+        114,
+        93,
+        86,
+        94,
+        104,
+        117,
+        142
+      ]
+    },
+    "x2_ph": {
+      "classifier": "logreg",
+      "accuracy_by_snapshot": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "n_by_snapshot": [
+        122,
+        114,
+        93,
+        86,
+        94,
+        104,
+        117,
+        142
+      ]
+    },
+    "ph_counts": {
+      "classifier": "rf",
+      "accuracy_by_snapshot": [
+        0.9453551912568307,
+        0.9678362573099416,
+        0.9713261648745519,
+        0.9534883720930233,
+        0.9858156028368795,
+        1.0,
+        1.0,
+        0.983568075117371
+      ],
+      "n_by_snapshot": [
+        122,
+        114,
+        93,
+        86,
+        94,
+        104,
+        117,
+        142
+      ]
+    }
+  }
+}

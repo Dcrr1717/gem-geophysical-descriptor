@@ -1,0 +1,100 @@
+{
+  "phase": "design (outcome-blind: no descriptor view, no benchmark classifier)",
+  "pool_snapshots": 1920,
+  "pool_trajectories": 240,
+  "valid_fraction_by_class": [
+    0.9333333333333333,
+    0.9729166666666667
+  ],
+  "invalid_core_counts": {
+    "0": {
+      "2": 45,
+      "3": 13,
+      "4": 4,
+      "5": 1,
+      "8": 1
+    },
+    "1": {
+      "1": 6,
+      "3": 16,
+      "4": 3,
+      "5": 1
+    }
+  },
+  "balance_before": {
+    "spectral_centroid": {
+      "smd": 0.15178169204746272,
+      "variance_ratio": 0.7208156886487237
+    },
+    "spectral_width": {
+      "smd": -0.4888163231850209,
+      "variance_ratio": 0.6473360183363258
+    },
+    "occupied_area": {
+      "smd": -0.24006028090227238,
+      "variance_ratio": 0.5936612987160834
+    },
+    "standardized_peak": {
+      "smd": 0.36384146149640645,
+      "variance_ratio": 0.5407452602704717
+    }
+  },
+  "design_auc_before": 0.8259920369379015,
+  "matching": {
+    "method": "propensity",
+    "degree": 2,
+    "caliper_sd": 0.2,
+    "caliper": 0.25,
+    "gate": {
+      "max_abs_smd": 0.1,
+      "variance_ratio": [
+        0.5,
+        2.0
+      ],
+      "min_pairs": 120,
+      "max_design_auc": 0.6
+    }
+  },
+  "n_pairs": 436,
+  "matched_trajectories": 200,
+  "matched_snapshots_by_time": [
+    122,
+    114,
+    93,
+    86,
+    94,
+    104,
+    117,
+    142
+  ],
+  "gate": {
+    "passed": true,
+    "checks": {
+      "smd": true,
+      "variance_ratio": true,
+      "pairs": true,
+      "design_auc": true
+    },
+    "balance": {
+      "spectral_centroid": {
+        "smd": -0.0018698912771336557,
+        "variance_ratio": 1.0448084675865035
+      },
+      "spectral_width": {
+        "smd": 0.027025193903524494,
+        "variance_ratio": 0.9875104655017894
+      },
+      "occupied_area": {
+        "smd": 0.025562694401084995,
+        "variance_ratio": 1.0782640249460436
+      },
+      "standardized_peak": {
+        "smd": -0.0076789882662278465,
+        "variance_ratio": 1.0621611376230902
+      }
+    },
+    "design_auc": 0.4635815587913475,
+    "n_pairs": 436
+  },
+  "matched_set_sha256_16": "dcb2434ec859aba3"
+}

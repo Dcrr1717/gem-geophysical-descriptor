@@ -1,0 +1,187 @@
+{
+  "params": {
+    "cache_dir": "data/core_count",
+    "grid": 256,
+    "dt": 0.005,
+    "nu": 0.0002,
+    "amplitude": 10.0,
+    "background_rms": 0.05,
+    "background_band": [
+      4,
+      24
+    ],
+    "steepness": [
+      2.0,
+      8.0
+    ],
+    "single_radius": [
+      0.3,
+      0.75
+    ],
+    "single_aspect": [
+      1.5,
+      3.5
+    ],
+    "single_steepness": [
+      3.0,
+      8.0
+    ],
+    "pair_radius": [
+      0.3,
+      0.6
+    ],
+    "pair_size_ratio": [
+      0.35,
+      0.8
+    ],
+    "pair_amp_ratio": [
+      0.6,
+      1.0
+    ],
+    "pair_steepness": [
+      2.0,
+      5.0
+    ],
+    "pair_separation": [
+      4.0,
+      7.0
+    ],
+    "max_separation": 3.0,
+    "runs_per_class": 24,
+    "first_snapshot_time": 1.0,
+    "snapshot_interval": 1.0,
+    "snapshots_per_run": 4
+  },
+  "matching": {
+    "method": "propensity",
+    "caliper_sd": 0.2,
+    "caliper": 0.25,
+    "gate": {
+      "max_abs_smd": 0.1,
+      "variance_ratio": [
+        0.5,
+        2.0
+      ],
+      "min_pairs": 120,
+      "max_design_auc": 0.6
+    }
+  },
+  "n_snapshots": 192,
+  "valid_fraction_by_class": [
+    0.9583333333333334,
+    0.9791666666666666
+  ],
+  "design_stats_5_50_95_by_class": {
+    "0": {
+      "spectral_centroid": [
+        3.818213158379506,
+        6.889817632340803,
+        9.067547085167243
+      ],
+      "spectral_width": [
+        5.599868671861701,
+        7.361768077226138,
+        8.131536382441473
+      ],
+      "occupied_area": [
+        0.0059967041015625,
+        0.01084136962890625,
+        0.03409500122070312
+      ],
+      "standardized_peak": [
+        6.235786055883765,
+        10.195474554885077,
+        12.823801394229822
+      ]
+    },
+    "1": {
+      "spectral_centroid": [
+        4.324908717780691,
+        6.182350873462188,
+        8.841773829227073
+      ],
+      "spectral_width": [
+        5.659875919073115,
+        6.695165388390743,
+        7.572205852836497
+      ],
+      "occupied_area": [
+        0.005945587158203125,
+        0.01490020751953125,
+        0.023717498779296874
+      ],
+      "standardized_peak": [
+        7.540635939029844,
+        9.3601964531491,
+        13.266879429983508
+      ]
+    }
+  },
+  "balance_before": {
+    "spectral_centroid": {
+      "smd": -0.15895023383190718,
+      "variance_ratio": 0.7873325594085835
+    },
+    "spectral_width": {
+      "smd": -0.7061512285540917,
+      "variance_ratio": 0.6454637881517375
+    },
+    "occupied_area": {
+      "smd": 0.052808676445286376,
+      "variance_ratio": 0.5649332559871783
+    },
+    "standardized_peak": {
+      "smd": 0.08062893543705711,
+      "variance_ratio": 0.5388724591834387
+    }
+  },
+  "n_pairs_matched": 50,
+  "balance_after": {
+    "spectral_centroid": {
+      "smd": 0.059523848427922535,
+      "variance_ratio": 0.548476171251621
+    },
+    "spectral_width": {
+      "smd": 0.1629215665859415,
+      "variance_ratio": 0.4556771415639143
+    },
+    "occupied_area": {
+      "smd": -0.020721297918282717,
+      "variance_ratio": 0.5044270678756696
+    },
+    "standardized_peak": {
+      "smd": 0.11502070196668449,
+      "variance_ratio": 0.46701617423235164
+    }
+  },
+  "gate_after": {
+    "passed": false,
+    "checks": {
+      "smd": false,
+      "variance_ratio": false,
+      "pairs": false,
+      "design_auc": true
+    },
+    "balance": {
+      "spectral_centroid": {
+        "smd": 0.059523848427922535,
+        "variance_ratio": 0.548476171251621
+      },
+      "spectral_width": {
+        "smd": 0.1629215665859415,
+        "variance_ratio": 0.4556771415639143
+      },
+      "occupied_area": {
+        "smd": -0.020721297918282717,
+        "variance_ratio": 0.5044270678756696
+      },
+      "standardized_peak": {
+        "smd": 0.11502070196668449,
+        "variance_ratio": 0.46701617423235164
+      }
+    },
+    "design_auc": 0.2932,
+    "n_pairs": 50
+  },
+  "seconds": 177.5
+}

@@ -371,6 +371,26 @@ diagnosed causes of the NO-GO.
 - **Margin.** No ≥ +0.05 margin is possible on either task: the headroom is
   0.000.
 
+## Scale-matched core count (fifth follow-up, pre-registered)
+
+Details: [`docs/MATCHED_CORE_COUNT.md`](MATCHED_CORE_COUNT.md).
+
+**The task.** One vortex core vs two (randomized elliptical, flat-topped
+single cores; unequal pairs). In an outcome-blind design phase, the classes
+are propensity-matched on spectral centroid, spectral width, occupied area
+and standardized peak: 436 pairs, max |SMD| 0.027.
+
+**NO-GO.**
+- Every single classical baseline drops to 0.83–0.90, but `baselines_union`
+  reaches 0.977. With a headroom of 0.023, a +0.05 margin was impossible.
+- The H0/H1 counts tie (0.976).
+- The sig6 persistence summaries are perfect (1.000): +0.023
+  [+0.009, +0.041] over all baselines combined (BH q = 0.005). This is the
+  first CI-backed topological advantage over the full union on clean fields,
+  but it is small and not a primary view.
+- The count re-appears in profile shape (single cores had to be
+  flat-topped) and in two-point structure.
+
 ## Methodological findings (useful regardless of the verdict)
 
 - **Round-off amplitude leak in standardization.** `(w − m) / (std + ε)` has

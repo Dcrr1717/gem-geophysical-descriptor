@@ -137,8 +137,8 @@ def generate_vortex_events(cfg, workers):
 # ---------------------------------------------------------------------------
 # Evaluation
 # ---------------------------------------------------------------------------
-def evaluate_task(name, F, masks, y, g, cfg, ev, dect_cfg):
-    sets = TOPO + BASE + INCR
+def evaluate_task(name, F, masks, y, g, cfg, ev, dect_cfg, sets=None):
+    sets = sets or TOPO + BASE + INCR
     task = run_task(name, F, y, g, sets, ev, 1.0 / len(np.unique(y)))
     if dect_cfg is not None:
         from ..descriptor.dect import train_eval_grouped
@@ -152,13 +152,17 @@ def evaluate_task(name, F, masks, y, g, cfg, ev, dect_cfg):
     return task
 
 
-def margins(task, y, g, n_boot, seed):
+def margins(task, y, g, n_boot, seed, topo=None):
+    """Paired group-bootstrap margins of every topological view (`topo`, default
+    TOPO, plus DECT and the incremental sets) over baselines_union and over the
+    best structure baseline."""
+    topo = topo or TOPO
     R = task["results"]
     u = R["baselines_union"]
     sb = max(STRUCT, key=lambda k: R[k]["best_accuracy"])
     out = {"baselines_union_accuracy": u["best_accuracy"], "headroom": 1 - u["best_accuracy"],
            "best_structure_baseline": sb, "vs_union": {}, "vs_best_structure": {}}
-    for k in [c for c in TOPO + ["dect"] + INCR if c in R]:
+    for k in [c for c in topo + ["dect"] + INCR if c in R]:
         m = paired_bootstrap_margin(R[k], u, y, g, n_boot, seed)
         out["vs_union"][k] = {"accuracy": R[k]["best_accuracy"], "margin": m["margin"],
                               "ci95": m["ci95"], "p_le_0": m["p_le_0"]}
@@ -167,9 +171,14 @@ def margins(task, y, g, n_boot, seed):
     return out
 
 
-def decide(tasks, thr):
+def decide(tasks, thr, primary=None, topo=None):
+    """Pre-registered rule: BH over all (task, topological view) comparisons vs
+    baselines_union; GO for a task if a primary view has margin >= thr, CI
+    lower bound > 0 and BH q < 0.05."""
+    primary = primary or PRIMARY
+    topo = topo or TOPO
     fam = [(t, k) for t in tasks for k in tasks[t]["margins"]["vs_union"]
-           if k in TOPO + ["dect"]]
+           if k in topo + ["dect"]]
     q = bh_qvalues([tasks[t]["margins"]["vs_union"][k]["p_le_0"] for t, k in fam])
     for (t, k), qq in zip(fam, q):
         tasks[t]["margins"]["vs_union"][k]["q_bh"] = float(qq)
@@ -177,8 +186,8 @@ def decide(tasks, thr):
     for t, task in tasks.items():
         mu = task["margins"]["vs_union"]
         real = {k: bool(e["margin"] >= thr and e["ci95"][0] > 0 and e.get("q_bh", 1) < 0.05)
-                for k, e in mu.items() if k in TOPO + ["dect"]}
-        prim = [k for k in PRIMARY[t] if k in mu]
+                for k, e in mu.items() if k in topo + ["dect"]}
+        prim = [k for k in primary[t] if k in mu]
         best = max(prim, key=lambda k: mu[k]["margin"]) if prim else None
         verdict[t] = {"primary_views": prim, "best_primary_view": best,
                       "best_primary_margin": mu[best]["margin"] if best else None,

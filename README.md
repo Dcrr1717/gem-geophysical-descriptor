@@ -91,6 +91,17 @@ baselines (Okubo–Weiss, gradient statistics, increment flatness).
     `baselines_union` and the power spectrum alone (1.000). A merger also
     doubles the core size, which the spectrum sees.
   - Topology does **not** reach the +0.05 margin.
+- Fifth follow-up, pre-registered: a scale-matched core-count task
+  ([`docs/MATCHED_CORE_COUNT.md`](docs/MATCHED_CORE_COUNT.md)).
+  - One vortex core vs two. The classes are propensity-matched on spectral
+    centroid, spectral width, occupied area and peak, in an outcome-blind
+    design phase.
+  - Matching drops every single classical baseline to 0.83–0.90, but their
+    union still reaches 0.977. The headroom is 0.023: **NO-GO**.
+  - The H0/H1 counts tie (0.976). The persistence summaries `x2_ph` are
+    perfect (1.000), a small but significant +0.023 [+0.009, +0.041] over all
+    baselines combined.
+  - ECT and DECT lose again.
 
 Details: [`docs/RESULTS.md`](docs/RESULTS.md), [`results/hard_benchmark.md`](results/hard_benchmark.md),
 figures in `results/figures/`.
@@ -101,6 +112,8 @@ python -m src.eval.hard_benchmark --config config/hard_benchmark.yaml        # ~
 python -m src.eval.noise_sweep   --config config/hard_benchmark.yaml        # exploratory
 python -m src.eval.robustness_sweep --config config/noise_robustness.yaml  # degradations, ~2 h
 python -m src.eval.ect_benchmark  --config config/ect_vortex.yaml       # ECT/DECT + vortex merger, ~2.5 h (torch optional)
+python -m src.eval.matched_core_count --config config/matched_core_count.yaml --design  # task C design (outcome-blind)
+python -m src.eval.matched_core_count --config config/matched_core_count.yaml           # task C analysis, ~45 min
 python -m src.eval.hard_benchmark --config config/hard_benchmark_smoke.yaml  # ~3 min check
 ```
 

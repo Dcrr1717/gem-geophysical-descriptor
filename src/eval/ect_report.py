@@ -6,19 +6,23 @@ from pathlib import Path
 import numpy as np
 
 TASK_TITLES = {"iaaft_binary": "Task A: coherent turbulence vs IAAFT surrogate (structure-only)",
-               "vortex_merger": "Task B: merged vs separate vortex pair (connectivity)"}
+               "vortex_merger": "Task B: merged vs separate vortex pair (connectivity)",
+               "matched_core_count": "Task C: one core vs two cores, scale-matched (connectivity)"}
 CLASS_NAMES = {"iaaft_binary": ("coherent", "IAAFT surrogate"),
-               "vortex_merger": ("merged (1 core)", "separate (2 cores)")}
+               "vortex_merger": ("merged (1 core)", "separate (2 cores)"),
+               "matched_core_count": ("one core", "two cores")}
 
 
 def _rows(task):
     from .ect_benchmark import BASE, INCR, TOPO
     R = task["results"]
-    return [k for k in TOPO + ["dect"] + BASE + INCR if k in R]
+    order = TOPO + ["ect_boundary_aware", "dect"] + BASE + INCR + ["design_stats"]
+    return [k for k in order if k in R]
 
 
-def task_table(name, task, thr):
-    from .ect_benchmark import LABELS, TOPO
+def task_table(name, task, thr, labels=None):
+    from .ect_benchmark import LABELS
+    LABELS = labels or LABELS
     R, M = task["results"], task["margins"]
     L = [f"### {TASK_TITLES[name]}", "",
          f"`baselines_union` = {M['baselines_union_accuracy']:.3f}; headroom (largest "
@@ -41,10 +45,11 @@ def task_table(name, task, thr):
     return L
 
 
-def write_report(res, path):
+def write_report(res, path, title="ECT / DECT study (generated tables)",
+                 doc="docs/ECT_RESULTS.md"):
     thr = float(res["config"]["ect_study"]["rule"]["min_margin"])
-    L = ["# ECT / DECT study (generated tables)", "",
-         "Design, rule and interpretation: [`docs/ECT_RESULTS.md`](../docs/ECT_RESULTS.md). "
+    L = [f"# {title}", "",
+         f"Design, rule and interpretation: [`{doc}`](../{doc}). "
          f"Repeated StratifiedGroupKFold ({res['config']['ect_study']['n_repeats']} repeats x "
          f"{res['config']['evaluation']['n_splits']} folds, group = trajectory); best of LogReg "
          "/ RF for feature views, the DECT CNN head for `dect`; paired group-bootstrap 95% CIs; "
@@ -59,7 +64,7 @@ def write_report(res, path):
                  f"{v['headroom']:.3f} | **{v['verdict']}** |")
     L += [""]
     for t, task in res["tasks"].items():
-        L += task_table(t, task, thr) + [""]
+        L += task_table(t, task, thr, res.get("labels")) + [""]
     L += [f"Elapsed: {res['seconds']} s.", ""]
     path.write_text("\n".join(L) + "\n")
 
@@ -75,12 +80,14 @@ def _plt():
 
 
 FAMILY_COLORS = {"topo": "#2a78d6", "ect": "#008300", "struct": "#eda100",
-                 "spectral": "#1baf7a", "union": "#e87ba4"}
+                 "spectral": "#1baf7a", "union": "#e87ba4", "design": "#8a8a8a"}
 
 
 def _family(k):
-    if k in ("ect", "dect"):
+    if k in ("ect", "dect", "ect_boundary_aware"):
         return "ect"
+    if k == "design_stats":
+        return "design"
     if k.startswith("baselines_union"):
         return "union"
     if k in ("okubo_weiss", "gradient_stats", "increment_flatness", "physical_structure_all"):

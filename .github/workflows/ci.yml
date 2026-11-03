@@ -24,3 +24,7 @@ jobs:
         run: python -m pytest -q
       - name: ECT / DECT pipeline smoke run (offline, tiny config)
         run: python -m src.eval.ect_benchmark --config config/ect_vortex_smoke.yaml
+      - name: Matched core-count pipeline smoke run (offline, tiny config)
+        run: |
+          python -m src.eval.matched_core_count --config config/matched_core_count_smoke.yaml --design
+          python -m src.eval.matched_core_count --config config/matched_core_count_smoke.yaml
