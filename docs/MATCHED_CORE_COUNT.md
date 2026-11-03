@@ -42,8 +42,9 @@ Gaussian, a large p is flat-topped.
 
 **Why these families.** A single core reaches the area-to-scale ratio of a
 pair only when it is elongated and flat-topped. A pair reaches the ratio of a
-single core only when its cores are unequal. Monotone profiles are stable, so
-no core splits or sheds strong filaments within the window.
+single core only when its cores are unequal. Round monotone profiles are
+stable. Elongated cores can pinch off or shed fragments; the validity check
+below removes those snapshots.
 
 **Shared setup (both classes):**
 - Background: weak broadband vorticity (rms 5% of the peak, |k| ∈ [4, 24]),
@@ -91,8 +92,8 @@ descriptor view and no benchmark classifier is involved.
 
 | pilot | single core | pair | matching | outcome |
 |---|---|---|---|---|
-| v1 | round | equal | Mahalanobis, caliper 0.25 | 0 pairs. The classes differ jointly: area × centroid² has median 0.32 vs 0.47, the count = area / size² identity. |
-| v2 | elliptical, aspect up to 3 | equal | same | 0 pairs. Propensity AUC of the design statistics stays about 0.96. |
+| v1 | round | independent radii in [0.2, 0.5] | Mahalanobis, caliper 0.25 | 0 pairs. The classes differ jointly: area × centroid² has median 0.32 vs 0.47, the count = area / size² identity. |
+| v2 | elliptical, aspect up to 3 | same as v1 | same | 0 pairs. Propensity AUC of the design statistics stays about 0.96 (at t = 0). |
 | v3 | ranges above | ranges above | linear propensity | 50 pairs. Means balanced, but variance ratios about 0.5. |
 
 - The ranges for v3 were chosen at t = 0, by the propensity AUC of the design
@@ -148,7 +149,19 @@ characteristic changes (`docs/ECT_RESULTS.md`, diagnostics).
   higher than that of "gap"; otherwise keep "gap".
 - No task-C data is used for this choice.
 
-@@DECT_RESULT@@
+**Development result** (`results/dect_head_dev.json`,
+`results/figures/dect_head_dev.png`):
+
+| head | final train accuracy (split 0 / 1) | final test accuracy (split 0 / 1) | mean test |
+|---|---|---|---|
+| gap (original) | 0.783 / 0.775 | 0.700 / 0.717 | 0.708 |
+| **flat** | 1.000 / 1.000 | 0.908 / 0.917 | **0.912** |
+
+**Task C uses `head: flat`**, by the rule above.
+- The original head's split-0 numbers reproduce the earlier task-B
+  diagnostic exactly.
+- Task B's exact ECT with LogReg still scores higher (0.944 in the full CV).
+  So DECT remains a weaker learner here, but it no longer under-fits.
 
 ## Views
 

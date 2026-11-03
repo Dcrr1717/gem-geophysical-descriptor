@@ -16,7 +16,7 @@ ect_study:
     n_dirs: 16
     n_t: 16
     sharpness: 40.0
-    head: HEAD_TBD              # fixed from the task-B development run (src/eval/dect_dev.py)
+    head: flat                  # chosen on task B only (src/eval/dect_dev.py, results/dect_head_dev.json)
     threads: 4
   rule:
     min_margin: 0.05            # GO: margin >= +0.05 over baselines_union, 95% CI > 0, BH q < 0.05
