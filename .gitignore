@@ -20,6 +20,7 @@ results/*
 !results/matched_core_count.md
 !results/matched_core_count.json
 !results/matched_core_count_design.json
+!results/matched_core_count_diagnostics.json
 !results/core_count_pilot_v1.json
 !results/core_count_pilot_v2.json
 !results/core_count_pilot_v3.json

@@ -1,12 +1,20 @@
 # Task C: a scale-matched core-count task (one vortex core vs two)
 
-**Status: PRE-REGISTERED, results pending.** The fields, the outcome-blind
-design phase (matching and balance gate), the views and the decision rule
-below are committed before any descriptor view or benchmark classifier is
-computed on task-C data.
+**Status: pre-registered in commit `845905c`; results below.** The fields,
+the outcome-blind design phase (matching and balance gate), the views and
+the decision rule were committed before any descriptor view or benchmark
+classifier was computed on task-C data.
 - Code: `src/sims/core_count.py` and `src/eval/matched_core_count.py`.
 - Configuration: `config/matched_core_count.yaml`.
-- Results are added below the line in a later commit.
+
+**Verdict: NO-GO.** Matching removed the easy cues: every single classical
+baseline falls to 0.83–0.90. But their union still reaches 0.977, so the
+headroom was 0.023 and a +0.05 margin was impossible.
+- The H0/H1 counts tie (0.976).
+- The persistence summaries `x2_ph` classify perfectly (1.000): a small but
+  significant +0.023 [+0.009, +0.041] over all baselines combined (BH
+  q = 0.005). It is not a primary view and is below the +0.05 bar.
+- ECT and DECT are well below the baselines.
 
 ## Why this task
 
@@ -207,4 +215,158 @@ verdict is NO-GO, and the report names the baseline that does it.
 
 ## Results
 
-*Pending: added after the pre-registered run.*
+Pre-registered run of `config/matched_core_count.yaml` on the frozen matched
+set (`dcb2434ec859aba3`; 872 fields, 200 trajectories). It took 2 518 s on 4
+cores, with DECT enabled (flat head).
+- Generated tables: [`results/matched_core_count.md`](../results/matched_core_count.md).
+- All numbers: [`results/matched_core_count.json`](../results/matched_core_count.json).
+
+### Verdict (pre-registered rule): **NO-GO**
+
+| `baselines_union` | headroom | best primary view | margin vs `baselines_union` [95% CI] | ≥ +0.05? |
+|---|---|---|---|---|
+| 0.977 | 0.023 | `ph_counts` (0.976) | −0.001 [−0.017, +0.017] | no |
+
+**Topology does not achieve a ≥ +0.05 margin on this task, and it could
+not have.**
+- After matching, all baselines combined still reach 0.977, so the largest
+  possible margin was 0.023.
+- The H0/H1 counts tie them.
+- No primary view has a real advantage.
+
+**What the matching did achieve.** On task B, a single baseline (the power
+spectrum) was perfect. Here every single baseline drops to 0.83–0.90, and
+only their combinations come close to topology:
+
+| view | accuracy |
+|---|---|
+| `x2_ph` (sig6 persistence summaries) | **1.000** |
+| `baselines_union + ph_counts` | 0.987 |
+| `baselines_union` | 0.977 |
+| `ph_counts` (H0 / H1 counts) | 0.976 |
+| `physical_structure_all` (Okubo–Weiss + gradients + increments) | 0.967 |
+| `topo_betti_curves` / `topo_multiscale` / `topo_persistence_image` | 0.924 / 0.919 / 0.918 |
+| `power_spectrum` | 0.901 (LogReg 0.729) |
+| `histogram_quantiles` | 0.900 |
+| `gradient_stats` / `okubo_weiss` / `increment_flatness` | 0.884 / 0.877 / 0.872 |
+| `ect_boundary_aware` | 0.869 |
+| `moments` | 0.834 |
+| `topological_view_fullres` | 0.827 |
+| `dect` (flat head) | 0.795 |
+| `ect` | 0.779 |
+| `design_stats` (the four matching statistics; sanity) | 0.579 (LogReg 0.467) |
+
+![accuracy, task C](../results/figures/core_count_accuracy.png)
+
+**One secondary result to report, and not over-read.**
+- **The finding.** The sig6 persistence summaries (`x2_ph`) classify every
+  field correctly.
+  - Over `baselines_union` this is a margin of **+0.023 [+0.009, +0.041]**,
+    BH q = 0.005, inside the pre-registered family of nine comparisons.
+  - Over the best structure baseline it is +0.033 [+0.017, +0.051].
+- **What it is.** This is the first topological view in this project with an
+  advantage over all baselines combined whose CI excludes zero on clean
+  fields.
+- **What it is not.**
+  - It is not a primary view.
+  - It is below the +0.05 bar, which the headroom made unreachable anyway.
+  - So it does not turn the verdict into a GO.
+- **Adding counts to the baselines.** The H0/H1 counts add a little to the
+  baselines: `baselines_union + ph_counts` scores 0.987, +0.010
+  [+0.002, +0.019].
+
+![matched pairs](../results/figures/core_count_examples.png)
+
+**The richer representations lost again.**
+- **ECT.** The ECT (0.779; boundary-aware 0.869) and DECT (0.795) are far
+  below the persistence views.
+- **Why the ECT figure suggests this happens.** The classes differ most at
+  level h = −0.75, in the background, not at the cores. There the Euler
+  characteristic is about 100–130 per field, made up of background
+  components, while the core count differs by one.
+  - An Euler characteristic has no persistence filter, so the
+    one-structure difference is buried in background topology.
+  - Persistence-based counts (thresholds 0.5, 1, 2 σ) and summaries filter
+    it out.
+- **Betti curves and persistence images** (0.92) sit in between.
+
+![ECT images, task C](../results/figures/core_count_ect_images.png)
+
+### Exploratory diagnostics (post hoc, not part of the verdict)
+
+`python -m src.eval.core_count_diagnostics --config config/matched_core_count.yaml`
+writes [`results/matched_core_count_diagnostics.json`](../results/matched_core_count_diagnostics.json).
+It uses the same matched set and CV.
+
+1. **No single family of baselines carries the residual cue; it is
+   redundant.**
+
+   | union variant | accuracy |
+   |---|---|
+   | full union (rebuilt, same as the analysis) | 0.977 |
+   | without one-point stats / without spectrum / without structure stats | 0.980 / 0.964 / 0.960 |
+   | only one-point / only spectrum / only structure stats | 0.899 / 0.895 / 0.967 |
+
+2. **It does not grow with time.**
+   - `baselines_union` is 0.96–0.99 at every snapshot time from t = 1.0 to
+     4.5, with no trend. Stirring of the background by the cores is not the
+     main leak.
+   - `x2_ph` is 1.000 at every time; `ph_counts` is 0.945–1.000, lowest at
+     the earliest times.
+3. **Where the count went: profile shape.** This is a descriptor-free check
+   on the matched set.
+   - A single core can only match a pair's area-to-scale ratio by being
+     elongated *and* flat-topped. So the matched classes still differ in
+     profile steepness: median p = 5.5 for single cores vs 3.4 for pairs.
+   - This shows in the one-point distribution. The ratio of the area above
+     ¾ of the peak to the area above ½ of the peak is 0.66 vs 0.45.
+   - Histogram quantiles and gradient statistics read that shape.
+   - Matching four summaries did not remove the count from non-topological
+     statistics. It moved it into a statistic that was not matched (profile
+     shape) and into two-point structure. The power spectrum needs a
+     nonlinear classifier (LogReg 0.729, RF 0.901), as expected from the
+     interference term stated in advance.
+
+### What this means
+
+- **The decoupling is partial, and probably cannot be complete.** In this
+  family of fields the classical statistics jointly determine the core count.
+  Matching scale, occupancy and peak removes the easy cues: no single
+  baseline exceeds 0.90. But the count re-appears in profile shape and
+  two-point structure, and the combination of baselines reaches 0.977.
+  Matching profile shape as well would leave less headroom still. Matching
+  every baseline statistic leads back to the IAAFT problem, where coherent
+  cores cannot survive.
+- **Topology is the most direct and the most robust reader of the count.**
+  The sig6 persistence summaries are perfect at every time, and the six H0/H1
+  counts match the full union of 136 classical features. It is not a large
+  margin: the best is +0.023, and the pre-registered rule needed +0.05.
+- **For the GEM chapter: a defensible claim.** On a scale-matched
+  core-count task, persistent-homology summaries classify perfectly. They
+  beat a strong union of classical diagnostics by a small but significant
+  margin, +0.023 [+0.009, +0.041]. The individual classical diagnostics
+  (Okubo–Weiss, gradients, spectrum) fall to 0.87–0.90.
+- **What is not defensible.** A ≥ +0.05 "topology wins" claim. Three
+  pre-registered tests (tasks A, B and C) have now ended without one.
+- **The representation matters, in the opposite direction from expected.**
+  Persistence-filtered counts and summaries beat the injective ECT and the
+  learned DECT. This is consistent with Turkeš et al.: the right
+  representation is the one that encodes the task's invariant (number of
+  persistent structures), not the richest one.
+
+## Reproduce
+
+```bash
+pip install -r requirements.txt      # torch is optional (DECT)
+python -m src.eval.core_count_pilot      --config config/matched_core_count.yaml --tag _v3  # descriptor-free pilot
+python -m src.eval.dect_dev              --config config/ect_vortex.yaml                     # DECT head on task B
+python -m src.eval.matched_core_count    --config config/matched_core_count.yaml --design    # outcome-blind design, ~15 min
+python -m src.eval.matched_core_count    --config config/matched_core_count.yaml             # pre-registered analysis, ~45 min
+python -m src.eval.core_count_diagnostics --config config/matched_core_count.yaml            # exploratory, ~5 min
+python -m src.eval.matched_core_count    --config config/matched_core_count_smoke.yaml --design  # CI-sized check
+python -m src.eval.matched_core_count    --config config/matched_core_count_smoke.yaml
+```
+
+All seeds are fixed in the configs. The pool (float32 fields) and the matched
+set are cached under `data/core_count/` (git-ignored). The analysis checks
+the matched set against the hash in the design record.
