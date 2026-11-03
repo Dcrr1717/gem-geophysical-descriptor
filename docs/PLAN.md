@@ -30,6 +30,8 @@ diagnostics match or beat it (gradient statistics 1.000), and topology adds no
 incremental value. Proceed with the SPMAC extended abstract (Plan B). See
 `docs/RESULTS.md`.
 
+Outline of the SPMAC extended abstract: `docs/SPMAC_OUTLINE.md`.
+
 ## Real-data follow-up (Nov 2026)
 Before switching to Plan B, one pre-registered real-data test in the setting
 most favourable to topology: ERA5 500 hPa winter blocking vs zonal days
